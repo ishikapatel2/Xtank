@@ -20,7 +20,7 @@ public class XTankServer
 		System.out.println(InetAddress.getLocalHost());
 		sq = new ArrayList<>();
 		
-        try (var listener = new ServerSocket(59896)) 
+        try (var listener = new ServerSocket(12345)) 
         {
             System.out.println("The XTank server is running...");
             var pool = Executors.newFixedThreadPool(20);
