@@ -13,29 +13,43 @@ import java.util.ArrayList;
  */
 public class XTankServer 
 {
+	static ArrayList<XTankManager> clients = new ArrayList<>();
 	static ArrayList<DataOutputStream> sq;
+	
 	
     public static void main(String[] args) throws Exception 
     {
 		System.out.println(InetAddress.getLocalHost());
-		sq = new ArrayList<>();
+		
 		
         try (var listener = new ServerSocket(12345)) 
         {
             System.out.println("The XTank server is running...");
-            var pool = Executors.newFixedThreadPool(20);
+            var pool = Executors.newFixedThreadPool(6);
+
             while (true) 
             {
-                pool.execute(new XTankManager(listener.accept()));
+            	//new runnable thread created
+            	XTankManager xTankThread = new XTankManager(listener.accept());
+            	
+            	clients.add(xTankThread);
+            	
+            	//executes each new client threat created
+                pool.execute(xTankThread);
             }
         }
     }
-
+    
+	/*
+	 * Runnable for our server
+	 */
     private static class XTankManager implements Runnable 
     {
         private Socket socket;
 
-        XTankManager(Socket socket) { this.socket = socket; }
+        XTankManager(Socket socket) {
+        	this.socket = socket;
+        }
 
         @Override
         public void run() 
@@ -43,8 +57,8 @@ public class XTankServer
             System.out.println("Connected: " + socket);
             try 
             {
-            	DataInputStream in = new DataInputStream(socket.getInputStream());
-            	DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+            	var in = new DataInputStream(socket.getInputStream());
+            	var out = new DataOutputStream(socket.getOutputStream());
                 sq.add(out);
                 int ycoord;
                 while (true)

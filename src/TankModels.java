@@ -1,6 +1,8 @@
 /*
  * 
  *Abstract class that is implemented by other tank types
+ *
+ *Not being implmeneted until everything works 
  * 
  */
 
@@ -13,5 +15,6 @@ public abstract class TankModels {
 			tank = new OriginalTank(player);
 		}
 	}
+	 
 
 }

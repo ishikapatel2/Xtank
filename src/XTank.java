@@ -1,19 +1,21 @@
 
 import java.net.Socket;
-import java.util.Scanner;
-
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.PrintWriter;
+/*
+ * Client class
+ */
 
 
 public class XTank {
 	
 	private JFrame frame;
+	private JLabel messageLabel;
 	private Socket socket;
 	private DataInputStream in;
 	private DataOutputStream out;
@@ -21,15 +23,30 @@ public class XTank {
 	private GameBoard gameBoard;
 	
 	
-	
 	public XTank(String serverAddress) throws Exception {
-		frame = new JFrame("XTank");
+		// creates new socket 
 		socket = new Socket(serverAddress, 12345);
+		frame = new JFrame("XTank");
 		
-        in = new DataInputStream(socket.getInputStream());
+		// takes input from the socket
+		in = new DataInputStream(socket.getInputStream());
+		
+		// sends output to the socket 
         out = new DataOutputStream(socket.getOutputStream());
+		
+		// creates the UI for all players 
+        gameBoard = new GameBoard(in, out);
+		frame.add(gameBoard);
+		frame.getContentPane().add(gameBoard, BorderLayout.CENTER);
+		
+		// message label that tells all players whose turn it is  
+		messageLabel = new JLabel("...");
+		messageLabel.setBackground(Color.lightGray);
+        frame.getContentPane().add(messageLabel, BorderLayout.SOUTH);
         
-        setGameBoard(new GameBoard());
+        OriginalTank tank = new OriginalTank("P1");
+        gameBoard.addTank(tank);
+
 	}
 	
 	
@@ -37,13 +54,10 @@ public class XTank {
 		return gameBoard;
 	}
 
-	public void setGameBoard(GameBoard gameBoard) {
-		this.gameBoard = gameBoard;
-	}
 	 
 	
 	private void play() throws Exception {
-		// TODO Auto-generated method stub
+		System.out.println("Playing");
 		
 	}
 	
@@ -58,15 +72,6 @@ public class XTank {
         client.frame.setResizable(false);
         client.frame.setLocationRelativeTo(null);
         client.play();
-        
-        
-        try (var socket = new Socket("127.0.0.1", 59896)) 
-        {
-        	DataInputStream in = new DataInputStream(socket.getInputStream());
-        	DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-            var ui = new XTankUI(in, out);
-            ui.start();
-        }
 
     }
 
