@@ -17,6 +17,8 @@ public class OriginalTank extends JPanel implements ActionListener, KeyListener 
 	
 	private double x;
 	private double y;
+	private double velx;
+	private double vely;
 	private Timer t = new Timer();
 	
 	private boolean status;
@@ -28,8 +30,8 @@ public class OriginalTank extends JPanel implements ActionListener, KeyListener 
 		status = true;
 		this.player = name;
 		
-		x = 0;
-		y = 0;
+		x = 0.0;
+		y = 0.0;
 		
 		
 		
@@ -39,39 +41,86 @@ public class OriginalTank extends JPanel implements ActionListener, KeyListener 
 	public void paintComponent(Graphics g) {
 		super.paint(g);
 		Graphics2D g2 = (Graphics2D) g;
-		Rectangle2D rectangle = new Rectangle2D.Double(x, y, 40, 90);
-		Ellipse2D oval = new Ellipse2D.Double(x, y+25, 50, 50);
+		Ellipse2D oval = new Ellipse2D.Double(x, y+25, 30, 30);
 		g2.setColor(new Color(125, 167, 116));
-		g2.fillRect(10, 10, 90, 60);
+		g2.fill(new Rectangle2D.Double(x, y, 40, 60));
 		
+		g2.setColor(new Color(10, 15, 90, 60));
+		g2.fill(new Ellipse2D.Double(x, y+25, 30, 30));
+		
+	
 		
 		
 	}
 	
 	@Override
-	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
+	public void actionPerformed(ActionEvent e) {
+		repaint();
+		x += velx;
+		y+= vely;
 		
+	}
+	
+	public void up() {
+		vely = -1.5;
+		velx = 0;
+		
+	
+	}
+	
+	public void down() {
+		vely = 1.5;
+		velx = 0;
+	}
+	
+	public void right() {
+		vely = 0;
+		velx = 1.5;
+	}
+	
+	public void left() {
+		velx = -1.5;
+		vely = 0;
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
+		int code = e.getKeyCode();
 		
+		if (code == KeyEvent.VK_DOWN) {
+			down();
+		}
+
+		if (code == KeyEvent.VK_UP) {
+			up();
+		}
+		
+		if (code == KeyEvent.VK_RIGHT) {
+			right();
+		}
+		
+		if (code == KeyEvent.VK_LEFT) {
+			left();
+		}
+		
+	}
+	
+	/*
+	 * sets the location of tank
+	 */
+	public void setCoords(double x, double y) {
+		this.x = x;
+		this.x = y;
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
 	}
 	
-	
-	
 	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	public String getPlayer() {
@@ -92,27 +141,8 @@ public class OriginalTank extends JPanel implements ActionListener, KeyListener 
 		return status;
 	}
 	
-	/*
-	 * sets the location of tank
-	 */
-	public void setCoords(double x, double y) {
-		xCoord = x;
-		yCoord = y;
-	}
 	
-	/*
-	 * returns x coordinate
-	 */
-	public double getX() {
-		return xCoord;
-	}
 	
-	/*
-	 * returns y coordinate
-	 */
-	public double getY() {
-		return yCoord;
-	}
 
 
 

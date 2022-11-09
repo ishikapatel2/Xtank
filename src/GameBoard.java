@@ -10,9 +10,7 @@ import java.util.Scanner;
 import javax.swing.JPanel;
 
 public class GameBoard extends JPanel implements ActionListener{
-	
-	
-	
+
 	private DataInputStream in;
 	private DataOutputStream out;
 	
