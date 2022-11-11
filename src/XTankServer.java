@@ -21,7 +21,8 @@ public class XTankServer
 		System.out.println(InetAddress.getLocalHost());
 		sq = new ArrayList<>();
 		
-        try (ServerSocket listener = new ServerSocket(59890)) 
+		// Connects to the socket
+        try (ServerSocket listener = new ServerSocket(12345)) 
         {
             System.out.println("The XTank server is running...");
             var pool = Executors.newFixedThreadPool(10);
@@ -35,10 +36,9 @@ public class XTankServer
             }
         }
     }
-
-    private static class XTankManager implements Runnable 
-    {
-    	private Player currentPlayer;
+    
+private static class XTankManager implements Runnable {
+    	
     	
         private Socket socket;
         
@@ -86,6 +86,6 @@ public class XTankServer
             }
           
         }
-    }
+        }
     
 }
