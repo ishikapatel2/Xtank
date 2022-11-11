@@ -1,86 +1,29 @@
-
 import java.net.Socket;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-/*
- * Client class
- */
 
-
-public class XTank {
-	
-	private JFrame frame;
-	private JLabel messageLabel;
-	private Socket socket;
-	private DataInputStream in;
-	private DataOutputStream out;
-	
-	private GameBoard gameBoard;
-	
-	
-	public XTank(String serverAddress) throws Exception {
-		// creates new socket 
-		socket = new Socket(serverAddress, 12345);
-		frame = new JFrame("XTank");
+public class XTank 
+{
+	private static int startingPositionX;
+	private static int startingPositionY;
+	private static int playerID;
+	public XTank() {
 		
-		// takes input from the socket
-		in = new DataInputStream(socket.getInputStream());
-		
-		// sends output to the socket 
-        out = new DataOutputStream(socket.getOutputStream());
-		
-		// creates the UI for all players 
-        gameBoard = new GameBoard(in, out);
-		frame.add(gameBoard);
-		frame.getContentPane().add(gameBoard, BorderLayout.CENTER);
-		
-		// message label that tells all players whose turn it is  
-		messageLabel = new JLabel("...");
-		messageLabel.setBackground(Color.lightGray);
-        frame.getContentPane().add(messageLabel, BorderLayout.SOUTH);
-        
-        OriginalTank tank = new OriginalTank("P1");
-        gameBoard.addTank(tank);
-
-	}
-	
-	
-	public GameBoard getGameBoard() {
-		return gameBoard;
-	}
-
-	 
-	
-	private void play() throws Exception {
-		System.out.println("Playing");
+		// starts each player's tank at a random position
+		startingPositionX = (int)(Math.random() * ((30) + 400)) + 30;
+		startingPositionY = (int)(Math.random() * ((400 - 30) + 1)) + 30;
+		playerID = 1;
 		
 	}
-	
 	public static void main(String[] args) throws Exception 
     {
-		
-		XTank client = new XTank("127.0.0.1");
-        client.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        client.frame.setBackground(Color.black);
-        client.frame.setSize(500, 500);
-        client.frame.setVisible(true);
-        client.frame.setResizable(false);
-        client.frame.setLocationRelativeTo(null);
-        client.play();
-
+        try (var socket = new Socket("127.0.0.1", 59890)) 
+        {
+        	DataInputStream in = new DataInputStream(socket.getInputStream());
+        	DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+        	var ui = new XTankUI(in, out, startingPositionX, startingPositionY, playerID);
+        	playerID++;
+            ui.start(out);
+        }
     }
-
-
-
-
-
-
-	
 }
-
-
