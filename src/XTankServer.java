@@ -41,10 +41,16 @@ private static class XTankManager implements Runnable {
     	
     	
         private Socket socket;
+        private static int startingPositionX;
+    	private static int startingPositionY;
+    	private static int playerID;
         
 
         XTankManager(Socket socket) {
         	this.socket = socket;
+        	startingPositionX = (int)(Math.random() * ((30) + 400)) + 30;
+    		startingPositionY = (int)(Math.random() * ((400 - 30) + 1)) + 30;
+    		playerID = 1;
         	
         }
 
@@ -57,6 +63,9 @@ private static class XTankManager implements Runnable {
 
             	DataInputStream in = new DataInputStream(socket.getInputStream());
             	DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+            	var ui = new XTankUI(in, out, startingPositionX, startingPositionY, playerID);
+            	playerID++;
+                ui.start(out);
             	
                 sq.add(out);
                 while (true)
@@ -64,12 +73,13 @@ private static class XTankManager implements Runnable {
                 	Scanner scanner = new Scanner(in);
 					String line = scanner.nextLine();
 					String fix = "";
-					for (int i = 0; i < line.length(); i++) {
+					for (int i = 0; i < line.length(); i++) { 
 						char c = line.charAt(i);
 						if (c == ',' || c == '(' || c == ')' || Character.isLetterOrDigit(c) ) {
 							fix += line.charAt(i) + "";
 						}
 					}
+					scanner.close();
 					System.out.println(fix);
 					out.writeChars(fix);
                 }

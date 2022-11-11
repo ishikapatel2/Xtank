@@ -18,13 +18,13 @@ public class XTank
 	public static void main(String[] args) throws Exception 
     {
 		// opens socket and start the UI for each client
-        try (var socket = new Socket("127.0.0.1", 12345)) 
+        try (var socket = new Socket("192.168.1.20", 12345)) 
         {
         	DataInputStream in = new DataInputStream(socket.getInputStream());
         	DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-        	var ui = new XTankUI(in, out, startingPositionX, startingPositionY, playerID);
+        	XTankUI ui = new XTankUI(in, out, startingPositionX, startingPositionY, playerID);
         	playerID++;
-            ui.start();
+            ui.start(out);
         }
     }
-}
+} 

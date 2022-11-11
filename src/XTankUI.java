@@ -74,7 +74,7 @@ public class XTankUI
 		
 	}
 	
-	public void start()
+	public void start(DataOutputStream out)
 	{
 		
 		display = new Display();
@@ -232,7 +232,7 @@ public class XTankUI
 						player.setXY(player.getX(), height-130);
 					} else if (player.getY() < 100) { 
 						player.setXY(player.getX(), 100);
-					}	
+					}
 					
 					canvas.redraw();
 					
