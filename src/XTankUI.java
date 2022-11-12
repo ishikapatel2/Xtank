@@ -25,9 +25,12 @@ public class XTankUI
 	// canvas dimensions
 	private int width = 600;
 	private int height = 600;
-	// The location and direction of the "tank"
+	
+	// tracks the location of tank
 	private int x = 300;
 	private int y = 500;
+	private int tankDirection = 0; // 0 = up, 1 = right, 2 = down, 3 = left
+	
 	
 	private int health = 5;
 	private int id;
@@ -42,17 +45,20 @@ public class XTankUI
 	private Set<Coordinate> filledCoordsBullet;
 	private Set<Coordinate> filledCoordsObstacles;
 	
-	// tank direction
-	private int tankDirection = 0; // 0 = up, 1 = right, 2 = down, 3 = left
+	
+	
 	
 	DataInputStream in; 
 	PrintWriter out;
 	
-	public XTankUI(DataInputStream in, DataOutputStream out)
+	public XTankUI(DataInputStream in, DataOutputStream out, int tankModel, String weapon)
 	{
 		this.in = in;
 		this.out = new PrintWriter(out, true);
+		
 		this.id = 0;
+		
+		// data structures used to track all bullets and tanks in the server
 		this.enemyTanks = new HashMap<>();
 		this.bulletsList = new ArrayList<>();
 		this.enemyBulletsList = new ArrayList<>();
@@ -60,7 +66,6 @@ public class XTankUI
 		this.filledCoordsEnemyTank = new HashSet<>();
 		this.filledCoordsBullet = new HashSet<>();
 		this.filledCoordsObstacles = new HashSet<>();
-		this.tankDirection = 0;
 
 	}
 
@@ -192,7 +197,7 @@ public class XTankUI
 	}
 	
 	/*
-	 * Draws your tank on the canvas depending on the direction it is facing
+	 * Draws your tank on the canvas
 	 */
 	public void drawYourTank(PaintEvent event, Shell shell) {
 		if(tankDirection == 0) {
@@ -234,7 +239,7 @@ public class XTankUI
 	}
 	
 	/*
-	 * Draws the enemy tanks on the canvas depending on the direction it is facing
+	 * Draws the enemy tanks on the canvas depending on the direction it is m
 	 */
 	public void drawEnemyTank( PaintEvent event, Shell shell, Integer[] enemyTank) {
 		if(enemyTank[2] == 0) {
@@ -280,15 +285,12 @@ public class XTankUI
 	
 	public void start()
 	{
-		
+		// GUI creation
 		display = new Display();
 		Shell shell = new Shell(display);
 		shell.setText("XTank");
-
-		
 		GridLayout gridLayout = new GridLayout();
         shell.setLayout( gridLayout);
-        
         shell.setSize(width,height);
         
         Text healthText = new Text(shell, SWT.READ_ONLY | SWT.BORDER);
@@ -301,8 +303,6 @@ public class XTankUI
 
         canvas = new Canvas(upperComp, SWT.NONE);
         canvas.setSize(width,height); 
-
-	
 
 		canvas.addPaintListener(event -> {	
 			
@@ -321,7 +321,7 @@ public class XTankUI
 					fillCoords(bullet.getX(), bullet.getY(), "Bullet");
 
 					// if the bullet is out of bounds, remove it
-					if(bullet.getX() < 0 || bullet.getX() > 800 || bullet.getY() < 0 || bullet.getY() > 650) {	
+					if(bullet.getX() < 0 || bullet.getX() > width || bullet.getY() < 0 || bullet.getY() > height) {	
 						bulletsList.remove(i);
 					}
 					
@@ -439,7 +439,7 @@ public class XTankUI
 							out.println("BULLET: "+bullet.getId() + " X: " + bullet.getX() + " Y: " + bullet.getY() + " D: " + bulletDir);
 						}
 						catch(Exception ex) {
-							System.out.println("The server did not respond (write KL).");
+							System.out.println("Check the server");
 						}
 						
 						Timer timer = new Timer();

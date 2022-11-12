@@ -11,6 +11,7 @@ public class Tank implements Serializable{
 	private int playerID;
 	private int healthStatus;
 	
+	// size of tank
 	private int width;
 	private int height;
 	

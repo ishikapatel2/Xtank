@@ -1,4 +1,5 @@
 import java.net.Socket;
+import java.util.Scanner;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 /*
@@ -10,16 +11,41 @@ import java.io.DataOutputStream;
  * Purpose : This class creates a new socket and  UI for each player that connects to the server. A new thread is created
  *           for each player that joins. 
  */
-public class XTank 
-{
-	public static void main(String[] args) throws Exception 
-    {
+public class XTank {
+	
+	private static int tankModel;
+	private static String weapon
+	;
+	public static void main(String[] args) throws Exception  {
+		
+		// Asks the user their tank model and weapon choice 
+		System.out.println("Please choose your tank model (1 or 2): ");
+		Scanner scan = new Scanner(System.in);
+		
+		if (scan.nextInt() == 1) {
+			tankModel = 1;
+		}
+		else {
+			tankModel = 2;
+		}
+
+		System.out.println("Please choose your weapon: bullets or spikes");
+		
+		scan = new Scanner(System.in);
+		if (scan.nextLine() == "bullets") {
+			weapon = "bullets";
+		}
+		else {
+			weapon = "spikes";
+
+		
         try (var socket = new Socket("127.0.0.1", 12345)) 
         {
         	DataInputStream in = new DataInputStream(socket.getInputStream());
         	DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-        	var ui = new XTankUI(in, out);
+        	var ui = new XTankUI(in, out, tankModel, weapon);
             ui.start();
         }
     }
+}
 }
