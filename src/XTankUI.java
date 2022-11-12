@@ -33,6 +33,7 @@ public class XTankUI
 	private Map<Integer, Integer[]> enemyTanks;
 	private int directionX = 0;
 	private int directionY = 0;
+	private String map;
 	
 	private List<Bullet> bulletsList;
 	private List<Bullet> enemyBulletsList;
@@ -40,6 +41,7 @@ public class XTankUI
 	private Set<Coordinate> filledCoordsEnemyTank;
 	private Set<Coordinate> filledCoordsBullet;
 	private Set<Coordinate> filledCoordsObstacles;
+	private Set<Coordinate> filledCoordsWalls;
 	
 	// keep track of the tank direction
 	private int tankDirection = 0; // 0 = up, 1 = right, 2 = down, 3 = left
@@ -47,7 +49,7 @@ public class XTankUI
 	DataInputStream in; 
 	PrintWriter out;
 	
-	public XTankUI(DataInputStream in, DataOutputStream out)
+	public XTankUI(DataInputStream in, DataOutputStream out, String map)
 	{
 		this.in = in;
 		this.out = new PrintWriter(out, true);
@@ -59,7 +61,19 @@ public class XTankUI
 		this.filledCoordsEnemyTank = new HashSet<>();
 		this.filledCoordsBullet = new HashSet<>();
 		this.filledCoordsObstacles = new HashSet<>();
+		this.filledCoordsWalls = new HashSet<>();
 		this.tankDirection = 0;
+		this.map = map;
+		
+		if(this.map == "M1") {
+			fillCoords(300, 300, "obs1");
+			fillCoords(400, 200, "obs2");
+		}
+		
+		if(this.map == "M2") {
+			fillCoords(300, 300, "obs1");
+			fillCoords(400, 200, "obs2");
+		}
 
 	}
 
@@ -94,18 +108,20 @@ public class XTankUI
 				filledCoordsMyTank.add(toAdd);
 			}}
 			
-		} else if(type.equals("Obstacle1")) {
+		} else if(type.equals("obs1")) {
+			for(int i =x; i <=x+100; i++) {
+				for(int j = y ; j <= y+50; j++) {
+				Coordinate toAdd = new Coordinate(i,j);
+				filledCoordsObstacles.add(toAdd);
+				filledCoordsWalls.add(toAdd);
+			}}
+		}
+		else if(type.equals("obs2")) {
 			for(int i =x; i <=x+50; i++) {
 				for(int j = y ; j <= y+200; j++) {
 				Coordinate toAdd = new Coordinate(i,j);
 				filledCoordsObstacles.add(toAdd);
-			}}
-		}
-		else if(type.equals("Obstacle2")) {
-			for(int i =x; i <=x+300; i++) {
-				for(int j = y ; j <= y+50; j++) {
-				Coordinate toAdd = new Coordinate(i,j);
-				filledCoordsObstacles.add(toAdd);
+				filledCoordsWalls.add(toAdd);
 			}}
 		}
 		else {
@@ -180,6 +196,23 @@ public class XTankUI
 	 	return "none";
 		
 		
+	}
+	
+	public boolean wallCollision(int x, int y) {
+		
+		boolean wallCollision = false;
+		
+ 		for(Coordinate wallCoords: filledCoordsWalls) {	
+ 			if(wallCoords.getCoord()[0] == x && wallCoords.getCoord()[1] == y)
+ 			{
+ 			   System.out.println("wallCollision: " + wallCoords.getCoord()[0] + " " + wallCoords.getCoord()[1]);
+ 			   wallCollision = true;
+ 		       break;
+ 			}
+ 		}
+ 		
+ 		return wallCollision;
+	
 	}
 
 	
@@ -261,6 +294,20 @@ public class XTankUI
 			
 			event.gc.fillRectangle(canvas.getBounds());
 			this.filledCoordsMyTank.clear();
+			
+			if(this.map == "M1") {
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
+				event.gc.fillRectangle(300, 300, 100, 50);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
+				event.gc.fillRectangle(400, 200, 50, 200);
+			}
+			
+			if(this.map == "M2") {
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
+				event.gc.fillRectangle(300, 300, 100, 50);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
+				event.gc.fillRectangle(400, 200, 50, 200);
+			}
 			
 			
 			// draws your tank to the canvas
@@ -410,56 +457,45 @@ public class XTankUI
 					} 
 
 					if (e.keyCode == SWT.ARROW_UP) {
-						
+						if(!wallCollision(x, y-10)) {
 							directionX = 0;
 							directionY = -10;
 							x += directionX;
 							y += directionY;
 							tankDirection = 0;
-							
 							filledCoordsMyTank.clear();
 							fillCoords(x,y, "My Tank");
-							
-
-						
+						}
 					} else if (e.keyCode == SWT.ARROW_DOWN) {
-						
-						directionX = 0;
-						directionY = 10;
-						x += directionX;
-						y += directionY;
-						tankDirection = 1;
-						
-						filledCoordsMyTank.clear();
-						fillCoords(x,y, "My Tank");
-
-						
-						
+						if(!wallCollision(x, y+10)) {
+							directionX = 0;
+							directionY = 10;
+							x += directionX;
+							y += directionY;
+							tankDirection = 1;
+							filledCoordsMyTank.clear();
+							fillCoords(x,y, "My Tank");
+						}						
 					} else if (e.keyCode == SWT.ARROW_LEFT) {
-						
-						directionX = -10;
-						directionY = 0;
-						x += directionX;
-						y += directionY;
-						tankDirection = 2;
-						
-						filledCoordsMyTank.clear();
-						fillCoords(x,y, "My Tank");
-
-						
-						
+						if(!wallCollision(x-10, y)) {
+							directionX = -10;
+							directionY = 0;
+							x += directionX;
+							y += directionY;
+							tankDirection = 2;
+							filledCoordsMyTank.clear();
+							fillCoords(x,y, "My Tank");
+						}
 					} else if (e.keyCode == SWT.ARROW_RIGHT) {
-				
-						directionX = 10;
-						directionY = 0;
-						x += directionX;
-						y += directionY;
-						tankDirection = 3;
-						
-						filledCoordsMyTank.clear();
-						fillCoords(x,y, "My Tank");
-
-						
+						if(!wallCollision(x+10, y)) {
+							directionX = 10;
+							directionY = 0;
+							x += directionX;
+							y += directionY;
+							tankDirection = 3;
+							filledCoordsMyTank.clear();
+							fillCoords(x,y, "My Tank");
+						}
 					} 
 
 
