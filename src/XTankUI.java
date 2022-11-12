@@ -42,7 +42,7 @@ public class XTankUI
 	private Set<Coordinate> filledCoordsBullet;
 	private Set<Coordinate> filledCoordsObstacles;
 	
-	// keep track of the tank direction
+	// tank direction
 	private int tankDirection = 0; // 0 = up, 1 = right, 2 = down, 3 = left
 	
 	DataInputStream in; 
@@ -120,6 +120,13 @@ public class XTankUI
 		
 	}
 	
+	/*
+	 * This method keeps track of the bullet collisions into 
+	 * curent player and enemies. 
+	 * If bullet collides with current player, return 0
+	 * If bullet collides with enemy player, return 1
+	 * If bullet collides with both enemy player and current player, return -1
+	 */
 	public String isBulletCollision() {
 			
 		 	boolean enemyCollision = false;
@@ -185,7 +192,7 @@ public class XTankUI
 	}
 	
 	/*
-	 * Draws your tank on the canvas
+	 * Draws your tank on the canvas depending on the direction it is facing
 	 */
 	public void drawYourTank(PaintEvent event, Shell shell) {
 		if(tankDirection == 0) {
@@ -227,7 +234,7 @@ public class XTankUI
 	}
 	
 	/*
-	 * Draws the enemy tanks on the canvas
+	 * Draws the enemy tanks on the canvas depending on the direction it is facing
 	 */
 	public void drawEnemyTank( PaintEvent event, Shell shell, Integer[] enemyTank) {
 		if(enemyTank[2] == 0) {
@@ -376,15 +383,6 @@ public class XTankUI
 							healthText.setText("GAME OVER");
 							out.println("REMOVE: "+this.id + " X: -100 Y: -100 D: -1");
 							
-							Button quitButton = new Button(lowerComp, SWT.PUSH);
-					        quitButton.setText("Quit");
-					        quitButton.setSize(100, 50);
-					        quitButton.setForeground(display.getSystemColor(SWT.COLOR_GREEN));
-					        quitButton.addListener(SWT.Selection, new Listener() {
-					            public void handleEvent(Event e) {
-					            	System.exit(0);
-					            }
-					          });
 							
 						}
 					}
@@ -403,6 +401,9 @@ public class XTankUI
 			public void mouseDoubleClick(MouseEvent e) {} 
 		});
 
+		
+		// if the space bar is pressed, bullets are fired from player's tank
+		// shots can be fired in any direction (up/down/right/left)
 		canvas.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {
 				System.out.println("key " + e.keyCode + " pressed");
@@ -428,7 +429,7 @@ public class XTankUI
 						}
 						
 						
-						
+						// new bullet is created and added to bullet list that tracks bullets fired on the canvas
 						Bullet bullet = new Bullet(x+coords[0], y + coords[1], id, tankDirection);
 						int bulletDir = getBulletDirection(bullet);
 						bullet.setDirection(bulletDir);
@@ -448,7 +449,7 @@ public class XTankUI
 		                        Display.getDefault().asyncExec(new Runnable() {
 		                            public void run() {
 		                            	
-		                            	bullet.incrementY();
+		                            	bullet.move();
 										canvas.redraw();
 		
 										if(bullet.getY() <= -10) {
@@ -550,70 +551,71 @@ public class XTankUI
 							
 			try {
 				if (in.available() > 0) {
-					Scanner sin = new Scanner(in);
-					String line = sin.nextLine();
-					if (line != "") {
+					Scanner scanner = new Scanner(in);
+					String info = scanner.nextLine();
+					if (info != "") {
+						System.out.println(info);
 						
-					
-						System.out.println(line);
+						// updates tank locations of the the enemy and current player
+						String[] updatedInfo = info.split(" ");
+						String iD = updatedInfo[0];
+						int indentifier = Integer.parseInt(updatedInfo[1]);
+						int newX = Integer.parseInt(updatedInfo[3]);
+						int newY = Integer.parseInt(updatedInfo[5]);
+						int newDir = Integer.parseInt(updatedInfo[7]);
 						
-						// update tank location
-						// current format: "YOURID: 1 X: 300 Y: 500 D: 0"
-						// or "ENEMYID: 1 X: 300 Y: 500 D: 0"
-						String[] parts = line.split(" ");
-						String status = parts[0];
-						int tmpid = Integer.parseInt(parts[1]);
-						int x = Integer.parseInt(parts[3]);
-						int y = Integer.parseInt(parts[5]);
-						int d = Integer.parseInt(parts[7]);
-						if (status.equals("YOURID:"))
+						// updates your location if you moved
+						if (iD.equals("YOURID:"))
 						{
-							id = tmpid;
-							XTankUI.this.x = x;
-							XTankUI.this.y = y;
-							tankDirection = d;
+							id = indentifier;
+							x = newX;
+							y = newY;
+							tankDirection = newDir;
 							
 							filledCoordsMyTank.clear();
-							fillCoords(x,y, "My Tank");
+							fillCoords(newX, newY, "My Tank");
 							
 							while(isObstacleCollision().equals("tank") || 
 									isObstacleCollision().equals("both")) {
 								
-								XTankUI.this.x = (int)(Math.random()*500);
-								XTankUI.this.y = (int)(Math.random()*500);
+								x = (int)(Math.random()*500);
+								y = (int)(Math.random()*500);
 								
 								filledCoordsMyTank.clear();
-								fillCoords(XTankUI.this.x, XTankUI.this.y, "My Tank");
+								fillCoords(x, y, "My Tank");
 							}
 							
 							
 							canvas.redraw();
+							
+						// updates enemy location if enemy moved
 						}
-						else if (status.equals("ID:") && id != tmpid)
+						else if (iD.equals("ID:") && id != indentifier)
 						{
-							enemyTanks.put(tmpid, new Integer[] {x, y, d});
+							enemyTanks.put(indentifier, new Integer[] {newX, newY, newDir});
 							System.out.println("Enemy count: " + enemyTanks.size());
 							canvas.redraw();
 						}
 						
-						else if (status.equals("BULLET:") && id != tmpid)
+						// updates bullet location if bullet moved 
+						else if (iD.equals("BULLET:") && id != indentifier)
 						{
-							Bullet bullet = new Bullet(x,y,tmpid, d);
+							Bullet bullet = new Bullet(newX, newY, indentifier, newDir);
 							enemyBulletsList.add(bullet);
 							
-							Timer timer = new Timer();
-							timer.scheduleAtFixedRate(new TimerTask() {
+							Timer t = new Timer();
+							t.scheduleAtFixedRate(new TimerTask() {
 			                    @Override
 			                    public void run() {
 			                        Display.getDefault().asyncExec(new Runnable() {
 			                            public void run() {
 			                            	
-			                            	bullet.incrementY();
+			                            	bullet.move();
 											canvas.redraw();
 									
 											if(bullet.getY() <= -10) {
 												enemyBulletsList.remove(bullet);
-												timer.cancel();
+												t.cancel();
 												canvas.redraw();
 											}
 			                            }
@@ -624,9 +626,10 @@ public class XTankUI
 							canvas.redraw();
 						}
 						
-						else if(status.equals("REMOVE:") && id != tmpid ) {
+						// Removes tank if they have lost all health
+						else if(iD.equals("REMOVE:") && id != indentifier ) {
 							
-							enemyTanks.remove(tmpid);
+							enemyTanks.remove(indentifier);
 							canvas.redraw();
 						}
 					}
@@ -636,7 +639,7 @@ public class XTankUI
 				System.out.println(ex);
 			}				
             display.timerExec(1, this);
-//			display.asyncExec(this);
+			display.asyncExec(this);
 		}
 	};	
 	

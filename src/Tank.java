@@ -35,10 +35,6 @@ public class Tank implements Serializable{
 	
 	
 	public void moveTank(int moveX, int moveY) {
-		//int movement = (int) Math.sqrt((moveX * moveX) + (moveY * moveY));
-		//x += moveX/movement * 5;
-		//y += moveX/movement * 5;
-		
 		if (moveX > 0) 
 			direction = 0;
 		
@@ -52,7 +48,6 @@ public class Tank implements Serializable{
 			direction = 3;
 		
 		this.setXY(moveX, moveY);
-		
 	}
 	
 	/*
