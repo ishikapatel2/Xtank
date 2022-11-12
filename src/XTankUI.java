@@ -66,13 +66,16 @@ public class XTankUI
 		this.map = map;
 		
 		if(this.map == "M1") {
-			fillCoords(300, 300, "obs1");
-			fillCoords(400, 200, "obs2");
+			fillCoords(0, 0, "obs3");
+			fillCoords(100,100, "obs3");
+			fillCoords(200,200, "obs3");
+			fillCoords(300,300, "obs3");
 		}
 		
 		if(this.map == "M2") {
 			fillCoords(300, 300, "obs1");
 			fillCoords(400, 200, "obs2");
+			fillCoords(50, 50, "obs3");
 		}
 
 	}
@@ -119,6 +122,13 @@ public class XTankUI
 		else if(type.equals("obs2")) {
 			for(int i =x; i <=x+50; i++) {
 				for(int j = y ; j <= y+200; j++) {
+				Coordinate toAdd = new Coordinate(i,j);
+				filledCoordsObstacles.add(toAdd);
+				filledCoordsWalls.add(toAdd);
+			}}
+		} else if(type.equals("obs3")) {
+			for(int i =x; i <=x+200; i++) {
+				for(int j = y ; j <= y+50; j++) {
 				Coordinate toAdd = new Coordinate(i,j);
 				filledCoordsObstacles.add(toAdd);
 				filledCoordsWalls.add(toAdd);
@@ -203,7 +213,7 @@ public class XTankUI
 		boolean wallCollision = false;
 		
  		for(Coordinate wallCoords: filledCoordsWalls) {	
- 			if(wallCoords.getCoord()[0] == x && wallCoords.getCoord()[1] == y)
+ 			if((wallCoords.getCoord()[0] >= x && wallCoords.getCoord()[0] <= x+50) && (wallCoords.getCoord()[1] >= y && wallCoords.getCoord()[1] <= y+100))
  			{
  			   System.out.println("wallCollision: " + wallCoords.getCoord()[0] + " " + wallCoords.getCoord()[1]);
  			   wallCollision = true;
@@ -214,6 +224,34 @@ public class XTankUI
  		return wallCollision;
 	
 	}
+	
+	public boolean tankCollision(int x, int y) {
+			
+			boolean tankCollision = false;
+			
+	 		for(Coordinate tankCoords: filledCoordsEnemyTank) {	
+	 			if((tankCoords.getCoord()[0] >= x && tankCoords.getCoord()[0] <= x+50) && (tankCoords.getCoord()[1] >= y && tankCoords.getCoord()[1] <= y+100))
+	 			{
+	 			   System.out.println("tankCollision: " + tankCoords.getCoord()[0] + " " + tankCoords.getCoord()[1]);
+	 			   tankCollision = true;
+	 		       break;
+	 			}
+	 		}
+	 		
+	 		return tankCollision;
+		
+	}
+	
+	public boolean movementInCanvas(int x, int y) {
+	
+		if((550 >= x && 0 <= x) && (500 >= y && 0 <= y))
+		{
+		   return true;
+		}
+ 		
+ 		return false;
+	
+}
 
 	
 	public void drawYourTank(PaintEvent event, Shell shell) {
@@ -278,6 +316,7 @@ public class XTankUI
         shell.setSize(width,height);
         
         Text healthText = new Text(shell, SWT.READ_ONLY | SWT.BORDER);
+        healthText.setSize(100, 50);        
         healthText.setText("Health: " + health);
         healthText.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
         
@@ -297,9 +336,13 @@ public class XTankUI
 			
 			if(this.map == "M1") {
 				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
-				event.gc.fillRectangle(300, 300, 100, 50);
+				event.gc.fillRectangle(0, 0, 200, 50);
 				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
-				event.gc.fillRectangle(400, 200, 50, 200);
+				event.gc.fillRectangle(100, 100, 200, 50);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
+				event.gc.fillRectangle(200, 200, 200, 50);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
+				event.gc.fillRectangle(300, 300, 200, 50);
 			}
 			
 			if(this.map == "M2") {
@@ -307,6 +350,8 @@ public class XTankUI
 				event.gc.fillRectangle(300, 300, 100, 50);
 				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
 				event.gc.fillRectangle(400, 200, 50, 200);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
+				event.gc.fillRectangle(50, 50, 200, 50);
 			}
 			
 			
@@ -387,12 +432,15 @@ public class XTankUI
 							out.println("REMOVE: "+this.id + " X: -100 Y: -100 D: -1");
 							
 							Button quitButton = new Button(lowerComp, SWT.PUSH);
-					        quitButton.setText("Quit");
+					        quitButton.setText("Replay");
 					        quitButton.setSize(100, 50);
 					        quitButton.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+					        quitButton.setEnabled(true);
 					        quitButton.addListener(SWT.Selection, new Listener() {
 					            public void handleEvent(Event e) {
-					            	System.exit(0);
+					            	health = 5;
+					            	healthText.setText("Health: "+health);
+					            	quitButton.setEnabled(false);
 					            }
 					          });
 							
@@ -457,7 +505,7 @@ public class XTankUI
 					} 
 
 					if (e.keyCode == SWT.ARROW_UP) {
-						if(!wallCollision(x, y-10)) {
+						if(!wallCollision(x, y-10) && !tankCollision(x, y-10) && movementInCanvas(x, y-10)) {
 							directionX = 0;
 							directionY = -10;
 							x += directionX;
@@ -467,7 +515,7 @@ public class XTankUI
 							fillCoords(x,y, "My Tank");
 						}
 					} else if (e.keyCode == SWT.ARROW_DOWN) {
-						if(!wallCollision(x, y+10)) {
+						if(!wallCollision(x, y+10) && !tankCollision(x, y+10) && movementInCanvas(x, y+10)) {
 							directionX = 0;
 							directionY = 10;
 							x += directionX;
@@ -477,7 +525,7 @@ public class XTankUI
 							fillCoords(x,y, "My Tank");
 						}						
 					} else if (e.keyCode == SWT.ARROW_LEFT) {
-						if(!wallCollision(x-10, y)) {
+						if(!wallCollision(x-10, y) && !tankCollision(x-10, y) && movementInCanvas(x-10, y)) {
 							directionX = -10;
 							directionY = 0;
 							x += directionX;
@@ -487,7 +535,7 @@ public class XTankUI
 							fillCoords(x,y, "My Tank");
 						}
 					} else if (e.keyCode == SWT.ARROW_RIGHT) {
-						if(!wallCollision(x+10, y)) {
+						if(!wallCollision(x+10, y) && !tankCollision(x+10, y) && movementInCanvas(x+10, y)) {
 							directionX = 10;
 							directionY = 0;
 							x += directionX;

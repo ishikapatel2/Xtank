@@ -3,6 +3,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
 import java.net.InetAddress;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -61,11 +62,13 @@ public class XTankServer
                 PrintWriter outWriter = new PrintWriter(socket.getOutputStream(), true);
                 sq.add(out);
                 int currid = currentPlayer.getID();
-                int randX = (int)(Math.random()*500);
-                int randY = (int)(Math.random()*500);
-                currentPlayer.setX(randX);
-                currentPlayer.setY(randY);
-                outWriter.println("YOURID: " + currid + " X: " + randX + " Y: " + randY + " D: " + 0);
+                int x = (int)(Math.random()*500);
+                int y = (int)(Math.random()*500);
+                int dir = ThreadLocalRandom.current().nextInt(0, 3 + 1);
+                
+                currentPlayer.setX(x);
+                currentPlayer.setY(y);
+                outWriter.println("YOURID: " + currid + " X: " + x + " Y: " + y + " D: " + dir);
                 while (true)
                 {
 					if (in.available() > 0) {
