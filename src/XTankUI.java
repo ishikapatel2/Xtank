@@ -27,12 +27,12 @@ public class XTankUI
 	private int height = 600;
 	
 	// tracks the location of tank
-	private int x = 300;
-	private int y = 500;
-	private int tankDirection = 0; // 0 = up, 1 = right, 2 = down, 3 = left
+	private int x = 0;
+	private int y = 0;
+	private int tankDirection = 0;
 	
 	
-	private int health = 5;
+	private int health = 8;
 	private int id;
 	private Map<Integer, Integer[]> enemyTanks;
 	private int directionX = 0;
@@ -45,7 +45,9 @@ public class XTankUI
 	private Set<Coordinate> filledCoordsBullet;
 	private Set<Coordinate> filledCoordsObstacles;
 	
-	
+	// based on what the user chooses
+	private int tankModel;
+	private String weapon;
 	
 	
 	DataInputStream in; 
@@ -57,6 +59,8 @@ public class XTankUI
 		this.out = new PrintWriter(out, true);
 		
 		this.id = 0;
+		this.tankModel = tankModel;
+		this.weapon = weapon;
 		
 		// data structures used to track all bullets and tanks in the server
 		this.enemyTanks = new HashMap<>();
@@ -66,9 +70,15 @@ public class XTankUI
 		this.filledCoordsEnemyTank = new HashSet<>();
 		this.filledCoordsBullet = new HashSet<>();
 		this.filledCoordsObstacles = new HashSet<>();
+	
 
 	}
 
+	
+	/*
+	 * This method will return the direction a bullet is moving
+	 * based on which player fired.
+	 */
 	private int getBulletDirection(Bullet bullet) {
 		
 		// look at the bullet's id and return the direction of the tank that fired it
@@ -85,6 +95,8 @@ public class XTankUI
 		}
 		return -1;
 	}
+	
+	
 	
 	private void fillCoords(int x, int y, String type) {
 		
@@ -283,6 +295,12 @@ public class XTankUI
 		fillCoords(enemyTank[0], enemyTank[1], "Tank");
 	}
 	
+	
+	/*
+	 * This method starts up the UI for each player by creating the canvas,
+	 * display and shell. This method also contains a PaintListener which is
+	 * used to draw all tanks, enemy tanks, collisions, and bullets.
+	 */
 	public void start()
 	{
 		// GUI creation
@@ -325,15 +343,24 @@ public class XTankUI
 						bulletsList.remove(i);
 					}
 					
+					
 					else if((!(isBulletCollision().equals("none"))) || isObstacleCollision().equals("bullet")  
 							|| isObstacleCollision().equals("both")) {
 						bulletsList.remove(i);
 					} 
 					
 					else {
-						event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
-						event.gc.fillOval( bullet.getX(), bullet.getY(), 8, 8);
-		
+						
+						// draws the weapon depending on what the user chose at the start of the game
+						if (this.weapon == "bullets") {
+							event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
+							event.gc.fillOval( bullet.getX(), bullet.getY(), 8, 8);
+						}
+						else {
+							event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
+							event.gc.fillRectangle( bullet.getX(), bullet.getY(), 8, 8);
+						}
+			
 					}
 					
 					
@@ -364,7 +391,15 @@ public class XTankUI
 					}
 					
 					else if((isBulletCollision().equals("mine") || isBulletCollision().equals("both") ))  {
-						health--;
+						
+						// player loses health depending on which weapon they were shot by
+						if (this.weapon == "bullets") {
+							health--;
+						}
+						else if (this.weapon == "spikes") {
+							health -= 3;
+						}
+						
 						healthText.setText("Health: "+health);
 						enemyBulletsList.remove(i);
 					} 
@@ -375,11 +410,17 @@ public class XTankUI
 					}
 					
 					else {
-						event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLUE));
-						event.gc.fillOval( bullet.getX(), bullet.getY(), 8, 8);
+						if (this.weapon == "bullets") {
+							event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLUE));
+							event.gc.fillOval( bullet.getX(), bullet.getY(), 8, 8);
+						}
+						else {
+							event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLUE));
+							event.gc.fillRectangle( bullet.getX(), bullet.getY(), 8, 8);
+						}
 
-						
-						if(health==0) {
+						// removes player if they have died
+						if(health <=0 ) {
 							healthText.setText("GAME OVER");
 							out.println("REMOVE: "+this.id + " X: -100 Y: -100 D: -1");
 							
@@ -395,6 +436,9 @@ public class XTankUI
 		);	
 		
 
+		/*
+		 * Mouse listener for the canvas. This method is not used/
+		 */
 		canvas.addMouseListener(new MouseListener() {
 			public void mouseDown(MouseEvent e) {} 
 			public void mouseUp(MouseEvent e) {} 
@@ -465,6 +509,7 @@ public class XTankUI
 						
 					} 
 
+					// moves player's tank up
 					if (e.keyCode == SWT.ARROW_UP) {
 						
 							directionX = 0;
@@ -477,7 +522,7 @@ public class XTankUI
 							fillCoords(x,y, "My Tank");
 							
 
-						
+					 // moves player's tank down
 					} else if (e.keyCode == SWT.ARROW_DOWN) {
 						
 						directionX = 0;
@@ -490,7 +535,7 @@ public class XTankUI
 						fillCoords(x,y, "My Tank");
 
 						
-						
+					// moves player's tank left
 					} else if (e.keyCode == SWT.ARROW_LEFT) {
 						
 						directionX = -10;
@@ -503,7 +548,7 @@ public class XTankUI
 						fillCoords(x,y, "My Tank");
 
 						
-						
+					// moves player's tank right
 					} else if (e.keyCode == SWT.ARROW_RIGHT) {
 				
 						directionX = 10;

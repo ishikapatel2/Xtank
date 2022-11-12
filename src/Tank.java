@@ -18,7 +18,7 @@ public class Tank implements Serializable{
 	/*
 	 * Constructor for each Tank object created
 	 */
-	public Tank(int initX, int initY, int initDirection, int playerID) {
+	public Tank(int initX, int initY, int initDirection, int playerID, int tankModel) {
 		this.x = initX;
 		this.y = initY;
 		this.direction = initDirection;
