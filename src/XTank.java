@@ -22,7 +22,7 @@ public class XTank
         {
         	DataInputStream in = new DataInputStream(socket.getInputStream());
         	DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-        	XTankUI ui = new XTankUI(in, out, startingPositionX, startingPositionY, playerID);
+        	XTankUI ui = new XTankUI(in, out, startingPositionX, startingPositionY, playerID, "MAP2");
         	playerID++;
             ui.start(out);
         }

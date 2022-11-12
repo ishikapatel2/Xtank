@@ -63,7 +63,7 @@ private static class XTankManager implements Runnable {
 
             	DataInputStream in = new DataInputStream(socket.getInputStream());
             	DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-            	var ui = new XTankUI(in, out, startingPositionX, startingPositionY, playerID);
+            	var ui = new XTankUI(in, out, startingPositionX, startingPositionY, playerID, "MAP2");
             	playerID++;
                 ui.start(out);
             	
