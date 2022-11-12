@@ -22,6 +22,7 @@ public class XTankUI
 	private Canvas canvas;
 	private Display display;
 	
+	// canvas dimensions
 	private int width = 600;
 	private int height = 600;
 	// The location and direction of the "tank"
@@ -64,6 +65,7 @@ public class XTankUI
 	}
 
 	private int getBulletDirection(Bullet bullet) {
+		
 		// look at the bullet's id and return the direction of the tank that fired it
 		int id = bullet.getId();
 		// check the current tank first
@@ -181,51 +183,89 @@ public class XTankUI
 		
 		
 	}
-
 	
+	/*
+	 * Draws your tank on the canvas
+	 */
 	public void drawYourTank(PaintEvent event, Shell shell) {
-		event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
-		event.gc.fillRectangle(x, y, 50, 100);
-		event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
-		event.gc.fillOval(x, y+25, 50, 50);
-		event.gc.setLineWidth(4);
-		// draw the line based on the direction
 		if(tankDirection == 0) {
-			event.gc.drawLine(x+25, y+25, x+25, y-25);
+			// up
+			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
+			event.gc.fillRectangle(x-(50/2), y-(100/2), 50, 100);
+			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+			event.gc.fillOval(x-(50/2), y-(50/2), 50, 50);
+			event.gc.setLineWidth(4);
+			event.gc.drawLine(x, y, x, y-70); 
 		} else if(tankDirection == 1) {
 			// down
-			event.gc.drawLine(x+25, y+75, x+25, y+125);
+			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
+			event.gc.fillRectangle(x-(50/2), y-(100/2), 50, 100);
+			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+			event.gc.fillOval(x-(50/2), y-(50/2), 50, 50);
+			event.gc.setLineWidth(4);
+			event.gc.drawLine(x, y, x, y+70); 
 		} else if(tankDirection == 2) {
-			// draw line to the left
-			event.gc.drawLine(x, y + 50, x - 25, y + 50);
+			// left
+			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
+			event.gc.fillRectangle(x-(100/2), y-(50/2), 100, 50);
+			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+			event.gc.fillOval(x-(50/2), y-(50/2), 50, 50);
+			event.gc.setLineWidth(4);
+			event.gc.drawLine(x, y, x-70, y);
 		} else if(tankDirection == 3) {
-			// draw line to the right
-			event.gc.drawLine(x+50, y+50, x+75, y+50);
+			// right
+			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
+			event.gc.fillRectangle(x-(100/2), y-(50/2), 100, 50);
+			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+			event.gc.fillOval(x-(50/2), y-(50/2), 50, 50);
+			event.gc.setLineWidth(4);
+			event.gc.drawLine(x, y, x+70, y);
 		}
-		
 		
 		fillCoords(x,y, "My Tank");
 		
 	}
 	
+	/*
+	 * Draws the enemy tanks on the canvas
+	 */
 	public void drawEnemyTank( PaintEvent event, Shell shell, Integer[] enemyTank) {
-		event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE));
-		event.gc.fillRectangle(enemyTank[0], enemyTank[1], 50, 100);
-		event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
-		event.gc.fillOval(enemyTank[0], enemyTank[1]+25, 50, 50);
-		event.gc.setLineWidth(4);
-		// draw the line based on the direction
 		if(enemyTank[2] == 0) {
-			event.gc.drawLine(enemyTank[0]+25, enemyTank[1]+25, enemyTank[0]+25, enemyTank[1]-25);
+			// up
+			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE));
+			event.gc.fillRectangle(enemyTank[0]-(50/2), enemyTank[1]-(100/2), 50, 100);
+			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+			event.gc.fillOval(enemyTank[0]-(50/2), enemyTank[1]-(50/2), 50, 50);
+			event.gc.setLineWidth(4);
+			event.gc.drawLine(enemyTank[0], enemyTank[1], enemyTank[0], enemyTank[1]-70); 
+			
 		} else if(enemyTank[2] == 1) {
 			// down
-			event.gc.drawLine(enemyTank[0]+25, enemyTank[1]+75, enemyTank[0]+25, enemyTank[1]+125);
+			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE));
+			event.gc.fillRectangle(enemyTank[0]-(50/2), enemyTank[1]-(100/2), 50, 100);
+			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+			event.gc.fillOval(enemyTank[0]-(50/2), enemyTank[1]-(50/2), 50, 50);
+			event.gc.setLineWidth(4);
+			event.gc.drawLine(enemyTank[0], enemyTank[1], enemyTank[0], enemyTank[1]+70); 
+
 		} else if(enemyTank[2] == 2) {
-			// draw line to the left
-			event.gc.drawLine(enemyTank[0], enemyTank[1] + 50, enemyTank[0] - 25, enemyTank[1] + 50);
+			// left
+			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE));
+			event.gc.fillRectangle(enemyTank[0]-(100/2), enemyTank[1]-(50/2), 100, 50);
+			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+			event.gc.fillOval(enemyTank[0]-(50/2), enemyTank[1]-(50/2), 50, 50);
+			event.gc.setLineWidth(4);
+			event.gc.drawLine(enemyTank[0], enemyTank[1], enemyTank[0]-70, enemyTank[1]);
+			
+			
 		} else if(enemyTank[2] == 3) {
-			// draw line to the right
-			event.gc.drawLine(enemyTank[0]+50, enemyTank[1]+50, enemyTank[0]+75, enemyTank[1]+50);
+			// right 
+			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE));
+			event.gc.fillRectangle(enemyTank[0]-(100/2), enemyTank[1]-(50/2), 100, 50);
+			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+			event.gc.fillOval(enemyTank[0]-(50/2), enemyTank[1]-(50/2), 50, 50);
+			event.gc.setLineWidth(4);
+			event.gc.drawLine(enemyTank[0], enemyTank[1], enemyTank[0]+70, enemyTank[1]);
 		}
 		
 		fillCoords(enemyTank[0], enemyTank[1], "Tank");
@@ -284,9 +324,6 @@ public class XTankUI
 					} 
 					
 					else {
-						
-						
-
 						event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
 						event.gc.fillOval( bullet.getX(), bullet.getY(), 8, 8);
 		
@@ -342,7 +379,7 @@ public class XTankUI
 							Button quitButton = new Button(lowerComp, SWT.PUSH);
 					        quitButton.setText("Quit");
 					        quitButton.setSize(100, 50);
-					        quitButton.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+					        quitButton.setForeground(display.getSystemColor(SWT.COLOR_GREEN));
 					        quitButton.addListener(SWT.Selection, new Listener() {
 					            public void handleEvent(Event e) {
 					            	System.exit(0);
@@ -373,8 +410,26 @@ public class XTankUI
 				if(health > 0) {
 					
 					if(e.keyCode == 32) {
+						System.out.println("testing");
+						 
+						int offset = 50;
+						int[] coords = {0, 0};
+						if (tankDirection == 0) { 
+							coords[0] = -4; coords[1] = -10; 
+						}
+						else if (tankDirection == 1) { 
+							coords[0] = +0; coords[1] = offset -100; 
+						}
+						else if (tankDirection == 2) { 
+							coords[0] = +20; coords[1] = -offset-30;
+						}
+						else if (tankDirection == 3) { 
+							coords[0] = -3; coords[1] = -offset-30;
+						}
 						
-						Bullet bullet = new Bullet(x + 20, y - 30, id, 0);
+						
+						
+						Bullet bullet = new Bullet(x+coords[0], y + coords[1], id, tankDirection);
 						int bulletDir = getBulletDirection(bullet);
 						bullet.setDirection(bulletDir);
 						bulletsList.add(bullet);
@@ -501,6 +556,7 @@ public class XTankUI
 						
 					
 						System.out.println(line);
+						
 						// update tank location
 						// current format: "YOURID: 1 X: 300 Y: 500 D: 0"
 						// or "ENEMYID: 1 X: 300 Y: 500 D: 0"
