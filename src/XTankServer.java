@@ -1,12 +1,13 @@
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.net.InetAddress;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -15,63 +16,67 @@ import java.util.Scanner;
 public class XTankServer 
 {
 	static ArrayList<DataOutputStream> sq;
+	static int playerID = 1;
+
 	
     public static void main(String[] args) throws Exception 
     {
 		System.out.println(InetAddress.getLocalHost());
 		sq = new ArrayList<>();
 		
-		// Connects to the socket
-        try (ServerSocket listener = new ServerSocket(12345)) 
+        try (var listener = new ServerSocket(12345)) 
         {
             System.out.println("The XTank server is running...");
-            var pool = Executors.newFixedThreadPool(10);
-            Game game = new Game();
-
-            while (true) {
-            	
-            	
-                pool.execute(new XTankManager(listener.accept()));
-                
+            var pool = Executors.newFixedThreadPool(20);
+           
+            while (true) 
+            {
+                Player player = new Player(playerID, 0);
+                pool.execute(new XTankManager(listener.accept(), player));
+                playerID++;
             }
         }
     }
-    
-private static class XTankManager implements Runnable {
-    	
-    	
-        private Socket socket;
-        
 
-        XTankManager(Socket socket) {
-        	this.socket = socket;
-        	
+    private static class XTankManager implements Runnable 
+    {
+        private Socket socket;
+        private Player currentPlayer;
+
+        XTankManager(Socket socket, Player player) 
+        {
+            this.socket = socket;
+            this.currentPlayer = player;
         }
 
         @Override
         public void run() 
         {
-            System.out.println("Socket is Connected!");
+            System.out.println("Connected: " + socket);
             try 
             {
-
             	DataInputStream in = new DataInputStream(socket.getInputStream());
             	DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-            	
+                Scanner scanner = new Scanner(in);
+                PrintWriter outWriter = new PrintWriter(socket.getOutputStream(), true);
                 sq.add(out);
+                int currid = currentPlayer.getID();
+                int randX = (int)(Math.random()*500);
+                int randY = (int)(Math.random()*500);
+                currentPlayer.setX(randX);
+                currentPlayer.setY(randY);
+                outWriter.println("YOURID: " + currid + " X: " + randX + " Y: " + randY + " D: " + 0);
                 while (true)
                 {
-                	Scanner scanner = new Scanner(in);
-					String line = scanner.nextLine();
-					String fix = "";
-					for (int i = 0; i < line.length(); i++) {
-						char c = line.charAt(i);
-						if (c == ',' || c == '(' || c == ')' || Character.isLetterOrDigit(c) ) {
-							fix += line.charAt(i) + "";
-						}
-					}
-					System.out.println(fix);
-					out.writeChars(fix);
+					if (in.available() > 0) {
+                        String line = scanner.nextLine();
+                	for (DataOutputStream o: sq)
+                	{
+                		PrintWriter outWriter2 = new PrintWriter(o, true);
+    						outWriter2.println(line);
+                	}
+                    }
+					
                 }
             } 
             catch (Exception e) 
@@ -84,8 +89,12 @@ private static class XTankManager implements Runnable {
                 catch (IOException e) {}
                 System.out.println("Closed: " + socket);
             }
-          
         }
-        }
+    }
+
+
+
+
+
     
 }

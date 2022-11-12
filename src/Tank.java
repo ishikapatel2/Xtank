@@ -1,6 +1,9 @@
 import java.io.Serializable;
 
+import org.eclipse.swt.SWT;
+
 public class Tank implements Serializable{
+	
 	
 	private int x;
 	private int y; 
@@ -25,14 +28,16 @@ public class Tank implements Serializable{
 		this.width = 50;
 		this.height = 60;
 	}
+
+	public void setDirection(int direction) {
+		this.direction = direction;
+	}
 	
-	/*
-	 * Moves the tank
-	 */
+	
 	public void moveTank(int moveX, int moveY) {
-		int movement = (int) Math.sqrt((moveX * moveX) + (moveY * moveY));
-		x += moveX/movement * 5;
-		y += moveX/movement * 5;
+		//int movement = (int) Math.sqrt((moveX * moveX) + (moveY * moveY));
+		//x += moveX/movement * 5;
+		//y += moveX/movement * 5;
 		
 		if (moveX > 0) 
 			direction = 0;
@@ -45,6 +50,9 @@ public class Tank implements Serializable{
 		
 		else if (moveY > 0) 
 			direction = 3;
+		
+		this.setXY(moveX, moveY);
+		
 	}
 	
 	/*
@@ -61,10 +69,18 @@ public class Tank implements Serializable{
 		return y;
 	}
 	
+	public void setX (int x) {
+		this.x = x;
+	}
+	
+	public void setY (int y) {
+		this.y = y;
+	}
+	
 	/*
 	 * sets position of tank to a new location
 	 */
-	public void setXY (int x, int y) {
+	private void setXY (int x, int y) {
 		this.x = x;
 		this.y = y;
 	}
@@ -80,9 +96,11 @@ public class Tank implements Serializable{
 	 * Keeps track of each players health status
 	 */
 	public int getHealth() {
-		if (healthStatus == 0) 
-			System.out.println("Player " + playerID + " has died");
 		return healthStatus;
+	}
+	
+	public void substractHealth() {
+		this.healthStatus -= 1;;
 	}
 	
 	
