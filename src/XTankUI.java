@@ -116,12 +116,19 @@ public class XTankUI
 	private void setCoords(int x, int y, String type) {
 		
 		if(type.equals("My Tank")) {
-			for(int i =x; i <=x+50; i++) {
-				for(int j = y ; j <= y+100; j++) {
-				Coordinate toAdd = new Coordinate(i,j);
-				filledCoordsMyTank.add(toAdd);
-			}}
-			
+			if(tankDirection == 0 || tankDirection == 1) {
+				for(int i =x; i <=x+50; i++) {
+					for(int j = y ; j <= y+100; j++) {
+					Coordinate toAdd = new Coordinate(i,j);
+					filledCoordsMyTank.add(toAdd);
+				}}	
+			} else {
+				for(int i =x; i <=x+100; i++) {
+					for(int j = y ; j <= y+50; j++) {
+					Coordinate toAdd = new Coordinate(i,j);
+					filledCoordsMyTank.add(toAdd);
+				}}	
+			}
 		} else if(type.equals("Enemy Tank")) {
 			if(enemyDirection == 0 || enemyDirection == 1) {
 				for(int i =x; i <=x+50; i++) {
@@ -279,7 +286,7 @@ public boolean wallCollision(int x, int y, int dir) {
 	public boolean tankCollision(int x, int y, int dir) {
 			
 		for(Coordinate tankCoords: filledCoordsEnemyTank) {	
-			if(dir == 2 || dir == 3) {
+			if(dir == 1 || dir == 0) {
 	 			if((tankCoords.getCoord()[0] >= x && tankCoords.getCoord()[0] <= x+50) 
 	 					&& (tankCoords.getCoord()[1] >= y && tankCoords.getCoord()[1] <= y+100))
 	 			{
@@ -549,6 +556,19 @@ public boolean wallCollision(int x, int y, int dir) {
 						if(health <=0 ) {
 							healthText.setText("GAME OVER");
 							out.println("REMOVE: "+this.id + " X: -100 Y: -100 D: -1");
+							
+							Button replayButton = new Button(lowerComp, SWT.PUSH);
+							replayButton.setText("Replay");
+							replayButton.setSize(100, 50);
+							replayButton.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+					        replayButton.setEnabled(true);
+					        replayButton.addListener(SWT.Selection, new Listener() {
+					            public void handleEvent(Event e) {
+					            	health = 5;
+					            	healthText.setText("Health: "+health);
+					            	replayButton.setEnabled(false);
+					            }
+					          });
 							
 							
 						}
