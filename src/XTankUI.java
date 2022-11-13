@@ -571,7 +571,7 @@ public class XTankUI
 					setCoords(bullet.getX(), bullet.getY(), "Bullet");
 
 					// if the bullet is out of bounds, remove it
-					if(bullet.getX() < 0 || bullet.getX() > width || bullet.getY() < 0 || bullet.getY() > height) {	
+					if(bullet.getX() < 0 || bullet.getX() > 800 || bullet.getY() < 0 || bullet.getY() > 800) {	
 						bulletsList.remove(i);
 					}
 					
