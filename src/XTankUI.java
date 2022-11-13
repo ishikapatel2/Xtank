@@ -243,7 +243,6 @@ public class XTankUI
 	 		for(Coordinate tankCoord: filledCoordsMyTank) {	
 	 			if(filledCoordsObstacles.contains(tankCoord))
 	 			{
-	 			   System.out.println(tankCoord.getCoord()[0] + " " + tankCoord.getCoord()[1]);
 	 		       tankCollision = true;
 	 		       break;
 	 			}
@@ -571,7 +570,7 @@ public class XTankUI
 					setCoords(bullet.getX(), bullet.getY(), "Bullet");
 
 					// if the bullet is out of bounds, remove it
-					if(bullet.getX() < 0 || bullet.getX() > 800 || bullet.getY() < 0 || bullet.getY() > 800) {	
+					if(bullet.getX() < 0 || bullet.getX() > width || bullet.getY() < 0 || bullet.getY() > height) {	
 						bulletsList.remove(i);
 					}
 					
@@ -618,7 +617,7 @@ public class XTankUI
 					this.filledCoordsBullet.clear();
 					setCoords(bullet.getX(), bullet.getY(), "Bullet");
 					// if the bullet is out of bounds, remove it
-					if(bullet.getX() < 0 || bullet.getX() > 800 || bullet.getY() < 0 || bullet.getY() > 650) {
+					if(bullet.getX() < 0 || bullet.getX() > width || bullet.getY() < 0 || bullet.getY() > height) {
 						enemyBulletsList.remove(i);
 					}
 					
@@ -763,7 +762,7 @@ public class XTankUI
 							y += directionY;
 							tankDirection = 0;
 							filledCoordsMyTank.clear();
-							setCoords(x,y, "My Tank");
+							setCoords(x,y, "Tank");
 						}
 					// moves player's tank down 
 					} else if (e.keyCode == SWT.ARROW_DOWN) {
@@ -774,7 +773,7 @@ public class XTankUI
 							y += directionY;
 							tankDirection = 1;
 							filledCoordsMyTank.clear();
-							setCoords(x,y, "My Tank");
+							setCoords(x,y, "Tank");
 						}
 					// moves player's tank left
 					} else if (e.keyCode == SWT.ARROW_LEFT) {
@@ -785,7 +784,7 @@ public class XTankUI
 							y += directionY;
 							tankDirection = 2;
 							filledCoordsMyTank.clear();
-							setCoords(x,y, "My Tank");
+							setCoords(x,y, "Tank");
 						}
 					// moves the player's tank right 
 					} else if (e.keyCode == SWT.ARROW_RIGHT) {
@@ -796,7 +795,7 @@ public class XTankUI
 							y += directionY;
 							tankDirection = 3;
 							filledCoordsMyTank.clear();
-							setCoords(x,y, "My Tank");
+							setCoords(x,y, "Tank");
 						}
 					} 
 
