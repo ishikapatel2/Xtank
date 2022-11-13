@@ -30,6 +30,7 @@ public class XTankUI
 	private int x = 0;
 	private int y = 0;
 	private int tankDirection = 0;
+	private int enemyDirection = 0;
 	
 	
 	private int health = 8;
@@ -37,6 +38,7 @@ public class XTankUI
 	private Map<Integer, Integer[]> enemyTanks;
 	private int directionX = 0;
 	private int directionY = 0;
+	private String map;
 	
 	private List<Bullet> bulletsList;
 	private List<Bullet> enemyBulletsList;
@@ -44,6 +46,7 @@ public class XTankUI
 	private Set<Coordinate> filledCoordsEnemyTank;
 	private Set<Coordinate> filledCoordsBullet;
 	private Set<Coordinate> filledCoordsObstacles;
+	private Set<Coordinate> wallCoords;
 	
 	// based on what the user chooses
 	private int tankModel;
@@ -53,7 +56,7 @@ public class XTankUI
 	DataInputStream in; 
 	PrintWriter out;
 	
-	public XTankUI(DataInputStream in, DataOutputStream out, int tankModel, String weapon)
+	public XTankUI(DataInputStream in, DataOutputStream out, int tankModel, String weapon, String map)
 	{
 		this.in = in;
 		this.out = new PrintWriter(out, true);
@@ -61,6 +64,7 @@ public class XTankUI
 		this.id = 0;
 		this.tankModel = tankModel;
 		this.weapon = weapon;
+		this.map = map;
 		
 		// data structures used to track all bullets and tanks in the server
 		this.enemyTanks = new HashMap<>();
@@ -70,8 +74,19 @@ public class XTankUI
 		this.filledCoordsEnemyTank = new HashSet<>();
 		this.filledCoordsBullet = new HashSet<>();
 		this.filledCoordsObstacles = new HashSet<>();
-	
-
+		wallCoords = new HashSet<>();
+		
+		if(this.map.equals("M1")) {
+			setCoords(0, 0, "obs3");
+			setCoords(200,200, "obs3");
+			setCoords(400,400, "obs3");
+		}
+		
+		if(this.map.equals("M2")) {
+			setCoords(300, 300, "obs1");
+			setCoords(500, 150, "obs2");
+			setCoords(50, 50, "obs3");
+		}
 	}
 
 	
@@ -98,33 +113,51 @@ public class XTankUI
 	
 	
 	
-	private void fillCoords(int x, int y, String type) {
+	private void setCoords(int x, int y, String type) {
 		
-		if(type.equals("Tank")) {
-			for(int i =x; i <=x+50; i++) {
-				for(int j = y ; j <= y+100; j++) {
-				Coordinate toAdd = new Coordinate(i,j);
-				filledCoordsEnemyTank.add(toAdd);
-			}}
-		} else if(type.equals("My Tank")) {
+		if(type.equals("My Tank")) {
 			for(int i =x; i <=x+50; i++) {
 				for(int j = y ; j <= y+100; j++) {
 				Coordinate toAdd = new Coordinate(i,j);
 				filledCoordsMyTank.add(toAdd);
 			}}
 			
-		} else if(type.equals("Obstacle1")) {
-			for(int i =x; i <=x+50; i++) {
-				for(int j = y ; j <= y+200; j++) {
-				Coordinate toAdd = new Coordinate(i,j);
-				filledCoordsObstacles.add(toAdd);
-			}}
+		} else if(type.equals("Enemy Tank")) {
+			if(enemyDirection == 0 || enemyDirection == 1) {
+				for(int i =x; i <=x+50; i++) {
+					for(int j = y ; j <= y+100; j++) {
+					Coordinate toAdd = new Coordinate(i,j);
+					filledCoordsEnemyTank.add(toAdd);
+				}}	
+			} else {
+				for(int i =x; i <=x+100; i++) {
+					for(int j = y ; j <= y+50; j++) {
+					Coordinate toAdd = new Coordinate(i,j);
+					filledCoordsEnemyTank.add(toAdd);
+				}}	
+			}
 		}
-		else if(type.equals("Obstacle2")) {
-			for(int i =x; i <=x+300; i++) {
+		else if(type.equals("obs1")) {
+			for(int i =x; i <=x+200; i++) {
 				for(int j = y ; j <= y+50; j++) {
 				Coordinate toAdd = new Coordinate(i,j);
 				filledCoordsObstacles.add(toAdd);
+				wallCoords.add(toAdd);
+			}}
+		}
+		else if(type.equals("obs2")) {
+			for(int i =x; i <=x+50; i++) {
+				for(int j = y ; j <= y+300; j++) {
+				Coordinate toAdd = new Coordinate(i,j);
+				filledCoordsObstacles.add(toAdd);
+				wallCoords.add(toAdd);
+			}}
+		} else if(type.equals("obs3")) {
+			for(int i =x; i <=x+200; i++) {
+				for(int j = y ; j <= y+50; j++) {
+				Coordinate toAdd = new Coordinate(i,j);
+				filledCoordsObstacles.add(toAdd);
+				wallCoords.add(toAdd);
 			}}
 		}
 		else {
@@ -137,7 +170,18 @@ public class XTankUI
 		
 	}
 	
-	/*
+//	public void setEnemyTank(int x, int y, int dir) {
+//		for(int i =x; i <=x+50; i++) {
+//			for(int j = y ; j <= y+100; j++) {
+//			ArrayList<Integer> toAdd = new ArrayList<Integer>();
+//			toAdd.add(i);
+//			toAdd.add(j);
+//			toAdd.add(dir);
+//			filledCoordsEnemyTank.add(toAdd);
+//		}}
+//	}
+	
+	/*x
 	 * This method keeps track of the bullet collisions into 
 	 * curent player and enemies. 
 	 * If bullet collides with current player, return 0
@@ -208,6 +252,69 @@ public class XTankUI
 		
 	}
 	
+public boolean wallCollision(int x, int y, int dir) {
+		
+ 		for(Coordinate wallCoord: wallCoords) {	
+ 			if(dir == 1 || dir == 0) {
+ 				if((wallCoord.getCoord()[0] >= (x-25) && wallCoord.getCoord()[0] <= (x-25)+50) 
+ 						&& (wallCoord.getCoord()[1] >= (y-50) && wallCoord.getCoord()[1] <= (y-50)+100))
+ 	 			{
+ 	 			   System.out.println("wallCollision: " + wallCoord.getCoord()[0] + " " + wallCoord.getCoord()[1]);
+ 	 			   return true;
+ 	 			}	
+ 			} else {
+ 				if((wallCoord.getCoord()[0] >= (x-50) && wallCoord.getCoord()[0] <= (x-50)+100) 
+ 						&& (wallCoord.getCoord()[1] >= (y-25) && wallCoord.getCoord()[1] <= (y-25)+50))
+ 	 			{
+ 	 			   System.out.println("wallCollision: " + wallCoord.getCoord()[0] + " " + wallCoord.getCoord()[1]);
+ 	 			   return true;
+ 	 			}	
+ 			}
+ 		}
+ 		
+ 		return false;
+	
+	}
+	
+	public boolean tankCollision(int x, int y, int dir) {
+			
+		for(Coordinate tankCoords: filledCoordsEnemyTank) {	
+			if(dir == 2 || dir == 3) {
+	 			if((tankCoords.getCoord()[0] >= x && tankCoords.getCoord()[0] <= x+50) 
+	 					&& (tankCoords.getCoord()[1] >= y && tankCoords.getCoord()[1] <= y+100))
+	 			{
+	 			   System.out.println("tankCollision: " + tankCoords.getCoord()[0] + " " + tankCoords.getCoord()[1]);
+	 			   return true;
+	 			}
+			} else {
+				if((tankCoords.getCoord()[0] >= x && tankCoords.getCoord()[0] <= x+100) 
+	 					&& (tankCoords.getCoord()[1] >= y && tankCoords.getCoord()[1] <= y+50))
+	 			{
+	 			   System.out.println("tankCollision: " + tankCoords.getCoord()[0] + " " + tankCoords.getCoord()[1]);
+	 			   return true;
+	 			}
+			}
+ 		}
+	 		
+	 		return false;
+		
+	}
+	
+	public boolean movementInCanvas(int x, int y, int dir) {
+		if(dir == 2 || dir == 3) {
+			if((550 >= (x-25) && 0 <= (x-25)) && (500 >= (y-50) && 0 <= (y-50))){
+			   return true;
+			}
+		} else {
+			if((550 >= (x-50) && 0 <= (x-50)) && (500 >= (y-25) && 0 <= (y-25))){
+				   return true;
+				}
+		}
+ 		
+ 		return false;
+	
+}
+	
 	/*
 	 * Draws your tank on the canvas
 	 */
@@ -246,7 +353,7 @@ public class XTankUI
 			event.gc.drawLine(x, y, x+70, y);
 		}
 		
-		fillCoords(x,y, "My Tank");
+		setCoords(x,y, "Tank");
 		
 	}
 	
@@ -292,7 +399,8 @@ public class XTankUI
 			event.gc.drawLine(enemyTank[0], enemyTank[1], enemyTank[0]+70, enemyTank[1]);
 		}
 		
-		fillCoords(enemyTank[0], enemyTank[1], "Tank");
+		enemyDirection = enemyTank[2];
+		setCoords(enemyTank[0], enemyTank[1], "Enemy Tank");
 	}
 	
 	
@@ -327,6 +435,24 @@ public class XTankUI
 			event.gc.fillRectangle(canvas.getBounds());
 			this.filledCoordsMyTank.clear();
 			
+			if(this.map.equals("M1")) {
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
+				event.gc.fillRectangle(0, 0, 200, 50);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
+				event.gc.fillRectangle(200, 200, 200, 50);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
+				event.gc.fillRectangle(400, 400, 200, 50);
+			}
+			
+			if(this.map.equals("M2")) {
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
+				event.gc.fillRectangle(300, 300, 200, 50);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
+				event.gc.fillRectangle(500, 150, 50, 300);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
+				event.gc.fillRectangle(50, 50, 200, 50);
+			}
+			
 			
 			// draws your tank to the canvas
 			if(health>0) {
@@ -336,7 +462,7 @@ public class XTankUI
 					
 					Bullet bullet = bulletsList.get(i);
 					this.filledCoordsBullet.clear();
-					fillCoords(bullet.getX(), bullet.getY(), "Bullet");
+					setCoords(bullet.getX(), bullet.getY(), "Bullet");
 
 					// if the bullet is out of bounds, remove it
 					if(bullet.getX() < 0 || bullet.getX() > width || bullet.getY() < 0 || bullet.getY() > height) {	
@@ -384,7 +510,7 @@ public class XTankUI
 					
 					Bullet bullet = enemyBulletsList.get(i);
 					this.filledCoordsBullet.clear();
-					fillCoords(bullet.getX(), bullet.getY(), "Bullet");
+					setCoords(bullet.getX(), bullet.getY(), "Bullet");
 					// if the bullet is out of bounds, remove it
 					if(bullet.getX() < 0 || bullet.getX() > 800 || bullet.getY() < 0 || bullet.getY() > 650) {
 						enemyBulletsList.remove(i);
@@ -393,10 +519,10 @@ public class XTankUI
 					else if((isBulletCollision().equals("mine") || isBulletCollision().equals("both") ))  {
 						
 						// player loses health depending on which weapon they were shot by
-						if (this.weapon == "bullets") {
+						if (this.weapon.equals("bullets")) {
 							health--;
 						}
-						else if (this.weapon == "spikes") {
+						else if (this.weapon.equals("spikes")) {
 							health -= 3;
 						}
 						
@@ -410,7 +536,7 @@ public class XTankUI
 					}
 					
 					else {
-						if (this.weapon == "bullets") {
+						if (this.weapon.equals("bullets")) {
 							event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLUE));
 							event.gc.fillOval( bullet.getX(), bullet.getY(), 8, 8);
 						}
@@ -511,56 +637,45 @@ public class XTankUI
 
 					// moves player's tank up
 					if (e.keyCode == SWT.ARROW_UP) {
-						
+						if(!wallCollision(x, y-10,0) && !tankCollision(x, y-10,0) && movementInCanvas(x, y-10,0)) {
 							directionX = 0;
 							directionY = -10;
 							x += directionX;
 							y += directionY;
 							tankDirection = 0;
-							
 							filledCoordsMyTank.clear();
-							fillCoords(x,y, "My Tank");
-							
-
-					 // moves player's tank down
+							setCoords(x,y, "My Tank");
+						}
 					} else if (e.keyCode == SWT.ARROW_DOWN) {
-						
-						directionX = 0;
-						directionY = 10;
-						x += directionX;
-						y += directionY;
-						tankDirection = 1;
-						
-						filledCoordsMyTank.clear();
-						fillCoords(x,y, "My Tank");
-
-						
-					// moves player's tank left
+						if(!wallCollision(x, y+10,1) && !tankCollision(x, y+10,1) && movementInCanvas(x, y+10,1)) {
+							directionX = 0;
+							directionY = 10;
+							x += directionX;
+							y += directionY;
+							tankDirection = 1;
+							filledCoordsMyTank.clear();
+							setCoords(x,y, "My Tank");
+						}						
 					} else if (e.keyCode == SWT.ARROW_LEFT) {
-						
-						directionX = -10;
-						directionY = 0;
-						x += directionX;
-						y += directionY;
-						tankDirection = 2;
-						
-						filledCoordsMyTank.clear();
-						fillCoords(x,y, "My Tank");
-
-						
-					// moves player's tank right
+						if(!wallCollision(x-10, y,2) && !tankCollision(x-10, y,2) && movementInCanvas(x-10, y,2)) {
+							directionX = -10;
+							directionY = 0;
+							x += directionX;
+							y += directionY;
+							tankDirection = 2;
+							filledCoordsMyTank.clear();
+							setCoords(x,y, "My Tank");
+						}
 					} else if (e.keyCode == SWT.ARROW_RIGHT) {
-				
-						directionX = 10;
-						directionY = 0;
-						x += directionX;
-						y += directionY;
-						tankDirection = 3;
-						
-						filledCoordsMyTank.clear();
-						fillCoords(x,y, "My Tank");
-
-						
+						if(!wallCollision(x+10, y,3) && !tankCollision(x+10, y,3) && movementInCanvas(x+10, y,3)) {
+							directionX = 10;
+							directionY = 0;
+							x += directionX;
+							y += directionY;
+							tankDirection = 3;
+							filledCoordsMyTank.clear();
+							setCoords(x,y, "My Tank");
+						}
 					} 
 
 
@@ -618,7 +733,7 @@ public class XTankUI
 							tankDirection = newDir;
 							
 							filledCoordsMyTank.clear();
-							fillCoords(newX, newY, "My Tank");
+							setCoords(newX, newY, "My Tank");
 							
 							while(isObstacleCollision().equals("tank") || 
 									isObstacleCollision().equals("both")) {
@@ -627,7 +742,7 @@ public class XTankUI
 								y = (int)(Math.random()*500);
 								
 								filledCoordsMyTank.clear();
-								fillCoords(x, y, "My Tank");
+								setCoords(x, y, "My Tank");
 							}
 							
 							

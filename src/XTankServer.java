@@ -71,8 +71,9 @@ public class XTankServer
                 int currid = currentPlayer.getID();
                 
                 // start position of current tank
-                int x = (int)(Math.random()*500);
-                int y = (int)(Math.random()*500);
+                Random random = new Random();
+                int x = random.ints(0,500).findFirst().getAsInt();
+                int y = random.ints(0,500).findFirst().getAsInt();
                 int dir = ThreadLocalRandom.current().nextInt(0, 3 + 1);
         
                 currentPlayer.setX(x);

@@ -14,7 +14,8 @@ import java.io.DataOutputStream;
 public class XTank {
 	
 	private static int tankModel;
-	private static String weapon
+	private static String weapon;
+	private static String map;
 	;
 	public static void main(String[] args) throws Exception  {
 		
@@ -32,20 +33,30 @@ public class XTank {
 		System.out.println("Please choose your weapon: bullets or spikes");
 		
 		scan = new Scanner(System.in);
-		if (scan.nextLine() == "bullets") {
+		if (scan.nextLine().equals("bullets")) {
 			weapon = "bullets";
 		}
 		else {
 			weapon = "spikes";
+		}
+		
+		System.out.println("Please choose your map: M1 or M2");
+		
+		scan = new Scanner(System.in);
+		if (scan.nextLine().equals("M1")) {
+			map = "M1";
+		}
+		else {
+			map = "M2";
+		}
 
 		
         try (var socket = new Socket("127.0.0.1", 12345)) 
         {
         	DataInputStream in = new DataInputStream(socket.getInputStream());
         	DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-        	var ui = new XTankUI(in, out, tankModel, weapon);
+        	var ui = new XTankUI(in, out, tankModel, weapon, map);
             ui.start();
         }
-    }
 }
 }
