@@ -4,11 +4,11 @@ import java.io.DataOutputStream;
  * Author : Prasiddhi Gyawali, Ishika Patel
  * Date   : 11/12/22
  * Class  : CSC 335
- * File   : XTankServer.java
+ * File   : Player.java
  * 
  * Purpose : This class creates a player object for the Sever to keep track of a players
- *           location on the canvas, their score, and their ID which is unique to each player
- *           to send and receive information from the server.
+ *           location on the canvas, their score, and their ID which is unique to each player/
+ *  .
  */
 
 public class Player

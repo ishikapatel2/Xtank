@@ -19,7 +19,8 @@ public class XTank {
 	;
 	public static void main(String[] args) throws Exception  {
 		
-		// Asks the user their tank model and weapon choice 
+		// Asks the user their tank model, weapon choice, and map
+		
 		System.out.println("Please choose your tank model (1 or 2): ");
 		Scanner scan = new Scanner(System.in);
 		

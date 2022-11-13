@@ -16,7 +16,16 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Scanner;
-
+/*
+ * Author : Prasiddhi Gyawali, Ishika Patel
+ * Date   : 11/12/22
+ * Class  : CSC 335
+ * File   : XTankUI.java
+ * 
+ * Purpose : This class creates the UI for each player joining the game.
+ *           It draws all of the components of the game for the players.
+ *           This is path of the client in the client server model. 
+ */
 public class XTankUI
 {
 	private Canvas canvas;
@@ -56,6 +65,10 @@ public class XTankUI
 	DataInputStream in; 
 	PrintWriter out;
 	
+	/*
+	 * This is the constructor that initializes all of the variables and data structures
+	 *  that mimic the XTank game
+	 */
 	public XTankUI(DataInputStream in, DataOutputStream out, int tankModel, String weapon, String map)
 	{
 		this.in = in;
@@ -112,10 +125,13 @@ public class XTankUI
 	}
 	
 	
-	
+	/*
+	 * This method add coordinates of the tanks location as it moves
+	 * through the canvas. 
+	 */
 	private void setCoords(int x, int y, String type) {
 		
-		if(type.equals("My Tank")) {
+		if(type.equals("Tank")) {
 			if(tankDirection == 0 || tankDirection == 1) {
 				for(int i =x; i <=x+50; i++) {
 					for(int j = y ; j <= y+100; j++) {
@@ -176,19 +192,7 @@ public class XTankUI
 		}
 		
 	}
-	
-//	public void setEnemyTank(int x, int y, int dir) {
-//		for(int i =x; i <=x+50; i++) {
-//			for(int j = y ; j <= y+100; j++) {
-//			ArrayList<Integer> toAdd = new ArrayList<Integer>();
-//			toAdd.add(i);
-//			toAdd.add(j);
-//			toAdd.add(dir);
-//			filledCoordsEnemyTank.add(toAdd);
-//		}}
-//	}
-	
-	/*x
+	/*
 	 * This method keeps track of the bullet collisions into 
 	 * curent player and enemies. 
 	 * If bullet collides with current player, return 0
@@ -225,6 +229,12 @@ public class XTankUI
 			
 		}
 	
+	/*
+	 * This method checks if there is a collision and overall, it helps
+	 * determine if a bullet should be removed if it has not affected anything
+	 * on the canvas.
+	 * 
+	 */
 	public String isObstacleCollision() {
 			
 			boolean tankCollision = false;
@@ -259,7 +269,11 @@ public class XTankUI
 		
 	}
 	
-public boolean wallCollision(int x, int y, int dir) {
+	/*
+	 * This method checks if something has collided with a wall and
+	 * handles it 
+	 */
+	public boolean wallCollision(int x, int y, int dir) {
 		
  		for(Coordinate wallCoord: wallCoords) {	
  			if(dir == 1 || dir == 0) {
@@ -283,6 +297,9 @@ public boolean wallCollision(int x, int y, int dir) {
 	
 	}
 	
+	/*
+	 * This method checks if the tank has a collision.
+	 */
 	public boolean tankCollision(int x, int y, int dir) {
 			
 		for(Coordinate tankCoords: filledCoordsEnemyTank) {	
@@ -307,6 +324,9 @@ public boolean wallCollision(int x, int y, int dir) {
 		
 	}
 	
+	/*
+	 * This method checks if the tank is out of bounds.
+	 */
 	public boolean movementInCanvas(int x, int y, int dir) {
 		if(dir == 2 || dir == 3) {
 			if((550 >= (x-25) && 0 <= (x-25)) && (500 >= (y-50) && 0 <= (y-50))){
@@ -326,38 +346,76 @@ public boolean wallCollision(int x, int y, int dir) {
 	 * Draws your tank on the canvas
 	 */
 	public void drawYourTank(PaintEvent event, Shell shell) {
-		if(tankDirection == 0) {
-			// up
-			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
-			event.gc.fillRectangle(x-(50/2), y-(100/2), 50, 100);
-			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
-			event.gc.fillOval(x-(50/2), y-(50/2), 50, 50);
-			event.gc.setLineWidth(4);
-			event.gc.drawLine(x, y, x, y-70); 
-		} else if(tankDirection == 1) {
-			// down
-			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
-			event.gc.fillRectangle(x-(50/2), y-(100/2), 50, 100);
-			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
-			event.gc.fillOval(x-(50/2), y-(50/2), 50, 50);
-			event.gc.setLineWidth(4);
-			event.gc.drawLine(x, y, x, y+70); 
-		} else if(tankDirection == 2) {
-			// left
-			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
-			event.gc.fillRectangle(x-(100/2), y-(50/2), 100, 50);
-			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
-			event.gc.fillOval(x-(50/2), y-(50/2), 50, 50);
-			event.gc.setLineWidth(4);
-			event.gc.drawLine(x, y, x-70, y);
-		} else if(tankDirection == 3) {
-			// right
-			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
-			event.gc.fillRectangle(x-(100/2), y-(50/2), 100, 50);
-			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
-			event.gc.fillOval(x-(50/2), y-(50/2), 50, 50);
-			event.gc.setLineWidth(4);
-			event.gc.drawLine(x, y, x+70, y);
+		if (tankModel == 1) {
+			if(tankDirection == 0) {
+				// up
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
+				event.gc.fillRectangle(x-(50/2), y-(50/2), 50, 50);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+				event.gc.fillOval(x-(50/2), y-(50/2), 50, 50);
+				event.gc.setLineWidth(4);
+				event.gc.drawLine(x, y, x, y-70); 
+			} else if(tankDirection == 1) {
+				// down
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
+				event.gc.fillRectangle(x-(50), y-(50/2), 50, 50);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+				event.gc.fillOval(x-(50/2), y-(50/2), 50, 50);
+				event.gc.setLineWidth(4);
+				event.gc.drawLine(x, y, x, y+70); 
+			} else if(tankDirection == 2) {
+				// left
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
+				event.gc.fillRectangle(x-(50/2), y-(50/2), 50, 50);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+				event.gc.fillOval(x-(50/2), y-(50/2), 50, 50);
+				event.gc.setLineWidth(4);
+				event.gc.drawLine(x, y, x-70, y);
+			} else if(tankDirection == 3) {
+				// right
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
+				event.gc.fillRectangle(x-(50/2), y-(50), 50, 50);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+				event.gc.fillOval(x-(50/2), y-(50/2), 50, 50);
+				event.gc.setLineWidth(4);
+				event.gc.drawLine(x, y, x+70, y);
+			}
+		}
+		else if (tankModel == 2){
+			if(tankDirection == 0) {
+				// up
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
+				event.gc.fillRectangle(x-(50/2), y-(100/2), 50, 100);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+				event.gc.fillOval(x-(50/2), y-(50/2), 50, 50);
+				event.gc.setLineWidth(4);
+				event.gc.drawLine(x, y, x, y-70); 
+			} else if(tankDirection == 1) {
+				// down
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
+				event.gc.fillRectangle(x-(50/2), y-(100/2), 50, 100);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+				event.gc.fillOval(x-(50/2), y-(50/2), 50, 50);
+				event.gc.setLineWidth(4);
+				event.gc.drawLine(x, y, x, y+70); 
+			} else if(tankDirection == 2) {
+				// left
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
+				event.gc.fillRectangle(x-(100/2), y-(50/2), 100, 50);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+				event.gc.fillOval(x-(50/2), y-(50/2), 50, 50);
+				event.gc.setLineWidth(4);
+				event.gc.drawLine(x, y, x-70, y);
+			} else if(tankDirection == 3) {
+				// right
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
+				event.gc.fillRectangle(x-(100/2), y-(50/2), 100, 50);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+				event.gc.fillOval(x-(50/2), y-(50/2), 50, 50);
+				event.gc.setLineWidth(4);
+				event.gc.drawLine(x, y, x+70, y);
+			
+			}
 		}
 		
 		setCoords(x,y, "Tank");
@@ -368,42 +426,83 @@ public boolean wallCollision(int x, int y, int dir) {
 	 * Draws the enemy tanks on the canvas depending on the direction it is m
 	 */
 	public void drawEnemyTank( PaintEvent event, Shell shell, Integer[] enemyTank) {
-		if(enemyTank[2] == 0) {
-			// up
-			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE));
-			event.gc.fillRectangle(enemyTank[0]-(50/2), enemyTank[1]-(100/2), 50, 100);
-			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
-			event.gc.fillOval(enemyTank[0]-(50/2), enemyTank[1]-(50/2), 50, 50);
-			event.gc.setLineWidth(4);
-			event.gc.drawLine(enemyTank[0], enemyTank[1], enemyTank[0], enemyTank[1]-70); 
-			
-		} else if(enemyTank[2] == 1) {
-			// down
-			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE));
-			event.gc.fillRectangle(enemyTank[0]-(50/2), enemyTank[1]-(100/2), 50, 100);
-			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
-			event.gc.fillOval(enemyTank[0]-(50/2), enemyTank[1]-(50/2), 50, 50);
-			event.gc.setLineWidth(4);
-			event.gc.drawLine(enemyTank[0], enemyTank[1], enemyTank[0], enemyTank[1]+70); 
-
-		} else if(enemyTank[2] == 2) {
-			// left
-			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE));
-			event.gc.fillRectangle(enemyTank[0]-(100/2), enemyTank[1]-(50/2), 100, 50);
-			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
-			event.gc.fillOval(enemyTank[0]-(50/2), enemyTank[1]-(50/2), 50, 50);
-			event.gc.setLineWidth(4);
-			event.gc.drawLine(enemyTank[0], enemyTank[1], enemyTank[0]-70, enemyTank[1]);
-			
-			
-		} else if(enemyTank[2] == 3) {
-			// right 
-			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE));
-			event.gc.fillRectangle(enemyTank[0]-(100/2), enemyTank[1]-(50/2), 100, 50);
-			event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
-			event.gc.fillOval(enemyTank[0]-(50/2), enemyTank[1]-(50/2), 50, 50);
-			event.gc.setLineWidth(4);
-			event.gc.drawLine(enemyTank[0], enemyTank[1], enemyTank[0]+70, enemyTank[1]);
+		if (tankModel == 1) {
+			if(enemyTank[2] == 0) {
+				// up
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE));
+				event.gc.fillRectangle(enemyTank[0]-(50/2), enemyTank[1]-(50/2), 50, 50);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+				event.gc.fillOval(enemyTank[0]-(50/2), enemyTank[1]-(50/2), 50, 50);
+				event.gc.setLineWidth(4);
+				event.gc.drawLine(enemyTank[0], enemyTank[1], enemyTank[0], enemyTank[1]-70); 
+				
+			} else if(enemyTank[2] == 1) {
+				// down
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE));
+				event.gc.fillRectangle(enemyTank[0]-(50/2), enemyTank[1]-(50/2), 50, 50);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+				event.gc.fillOval(enemyTank[0]-(50/2), enemyTank[1]-(50/2), 50, 50);
+				event.gc.setLineWidth(4);
+				event.gc.drawLine(enemyTank[0], enemyTank[1], enemyTank[0], enemyTank[1]+70); 
+	
+			} else if(enemyTank[2] == 2) {
+				// left
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE));
+				event.gc.fillRectangle(enemyTank[0]-(50), enemyTank[1]-(50/2), 50, 50);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+				event.gc.fillOval(enemyTank[0]-(50/2), enemyTank[1]-(50/2), 50, 50);
+				event.gc.setLineWidth(4);
+				event.gc.drawLine(enemyTank[0], enemyTank[1], enemyTank[0]-70, enemyTank[1]);
+				
+				
+			} else if(enemyTank[2] == 3) {
+				// right 
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE));
+				event.gc.fillRectangle(enemyTank[0]-(50), enemyTank[1]-(50/2), 50, 50);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+				event.gc.fillOval(enemyTank[0]-(50/2), enemyTank[1]-(50/2), 50, 50);
+				event.gc.setLineWidth(4);
+				event.gc.drawLine(enemyTank[0], enemyTank[1], enemyTank[0]+70, enemyTank[1]);
+			}
+		}
+		else {
+			if(enemyTank[2] == 0) {
+				// up
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE));
+				event.gc.fillRectangle(enemyTank[0]-(50/2), enemyTank[1]-(100/2), 50, 100);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+				event.gc.fillOval(enemyTank[0]-(50/2), enemyTank[1]-(50/2), 50, 50);
+				event.gc.setLineWidth(4);
+				event.gc.drawLine(enemyTank[0], enemyTank[1], enemyTank[0], enemyTank[1]-70); 
+				
+			} else if(enemyTank[2] == 1) {
+				// down
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE));
+				event.gc.fillRectangle(enemyTank[0]-(50/2), enemyTank[1]-(100/2), 50, 100);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+				event.gc.fillOval(enemyTank[0]-(50/2), enemyTank[1]-(50/2), 50, 50);
+				event.gc.setLineWidth(4);
+				event.gc.drawLine(enemyTank[0], enemyTank[1], enemyTank[0], enemyTank[1]+70); 
+	
+			} else if(enemyTank[2] == 2) {
+				// left
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE));
+				event.gc.fillRectangle(enemyTank[0]-(100/2), enemyTank[1]-(50/2), 100, 50);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+				event.gc.fillOval(enemyTank[0]-(50/2), enemyTank[1]-(50/2), 50, 50);
+				event.gc.setLineWidth(4);
+				event.gc.drawLine(enemyTank[0], enemyTank[1], enemyTank[0]-70, enemyTank[1]);
+				
+				
+			} else if(enemyTank[2] == 3) {
+				// right 
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE));
+				event.gc.fillRectangle(enemyTank[0]-(100/2), enemyTank[1]-(50/2), 100, 50);
+				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+				event.gc.fillOval(enemyTank[0]-(50/2), enemyTank[1]-(50/2), 50, 50);
+				event.gc.setLineWidth(4);
+				event.gc.drawLine(enemyTank[0], enemyTank[1], enemyTank[0]+70, enemyTank[1]);
+			}
 		}
 		
 		enemyDirection = enemyTank[2];
@@ -441,7 +540,7 @@ public boolean wallCollision(int x, int y, int dir) {
 			
 			event.gc.fillRectangle(canvas.getBounds());
 			this.filledCoordsMyTank.clear();
-			
+			//Map1
 			if(this.map.equals("M1")) {
 				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
 				event.gc.fillRectangle(0, 0, 200, 50);
@@ -450,7 +549,7 @@ public boolean wallCollision(int x, int y, int dir) {
 				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
 				event.gc.fillRectangle(400, 400, 200, 50);
 			}
-			
+			//Map2
 			if(this.map.equals("M2")) {
 				event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
 				event.gc.fillRectangle(300, 300, 200, 50);
@@ -666,6 +765,7 @@ public boolean wallCollision(int x, int y, int dir) {
 							filledCoordsMyTank.clear();
 							setCoords(x,y, "My Tank");
 						}
+					// moves player's tank down 
 					} else if (e.keyCode == SWT.ARROW_DOWN) {
 						if(!wallCollision(x, y+10,1) && !tankCollision(x, y+10,1) && movementInCanvas(x, y+10,1)) {
 							directionX = 0;
@@ -675,7 +775,8 @@ public boolean wallCollision(int x, int y, int dir) {
 							tankDirection = 1;
 							filledCoordsMyTank.clear();
 							setCoords(x,y, "My Tank");
-						}						
+						}
+					// moves player's tank left
 					} else if (e.keyCode == SWT.ARROW_LEFT) {
 						if(!wallCollision(x-10, y,2) && !tankCollision(x-10, y,2) && movementInCanvas(x-10, y,2)) {
 							directionX = -10;
@@ -686,6 +787,7 @@ public boolean wallCollision(int x, int y, int dir) {
 							filledCoordsMyTank.clear();
 							setCoords(x,y, "My Tank");
 						}
+					// moves the player's tank right 
 					} else if (e.keyCode == SWT.ARROW_RIGHT) {
 						if(!wallCollision(x+10, y,3) && !tankCollision(x+10, y,3) && movementInCanvas(x+10, y,3)) {
 							directionX = 10;
@@ -724,6 +826,13 @@ public boolean wallCollision(int x, int y, int dir) {
 		display.dispose();		
 	}
 	
+	
+	/*
+	 * This is the runnable for the client. It sends and receives information from
+	 * the XTank server and helps create the UI for the game. It helps all players 
+	 * see the changes made by every other player and updates the information on the server
+	 * side.
+	 */
 	class Runner implements Runnable
 	{
 		public void run() 
@@ -758,8 +867,8 @@ public boolean wallCollision(int x, int y, int dir) {
 							while(isObstacleCollision().equals("tank") || 
 									isObstacleCollision().equals("both")) {
 								
-								x = (int)(Math.random()*500);
-								y = (int)(Math.random()*500);
+								x = (int)(Math.random()*450);
+								y = (int)(Math.random()*450);
 								
 								filledCoordsMyTank.clear();
 								setCoords(x, y, "My Tank");
@@ -806,6 +915,7 @@ public boolean wallCollision(int x, int y, int dir) {
 							canvas.redraw();
 						}
 						
+						// removes player if they have lost all of thier health
 						// Removes tank if they have lost all health
 						else if(iD.equals("REMOVE:") && id != indentifier ) {
 							

@@ -2,6 +2,15 @@ import java.io.Serializable;
 
 import org.eclipse.swt.SWT;
 
+/*
+ * Author : Prasiddhi Gyawali, Ishika Patel
+ * Date   : 11/12/22
+ * Class  : CSC 335
+ * File   : Tank.java
+ * 
+ * Purpose : This class the tank object for XTank UI to keep track of. 
+ *            
+ */
 public class Tank implements Serializable{
 	
 	
@@ -30,11 +39,18 @@ public class Tank implements Serializable{
 		this.height = 60;
 	}
 
+	/*
+	 * This method sets the direction of the tank
+	 * it moves in
+	 */
 	public void setDirection(int direction) {
 		this.direction = direction;
 	}
 	
 	
+	/*
+	 * This method moves the tank
+	 */
 	public void moveTank(int moveX, int moveY) {
 		if (moveX > 0) 
 			direction = 0;
@@ -65,6 +81,9 @@ public class Tank implements Serializable{
 		return y;
 	}
 	
+	/*
+	 * This set the x coordinate
+	 */
 	public void setX (int x) {
 		this.x = x;
 	}
@@ -94,10 +113,7 @@ public class Tank implements Serializable{
 	public int getHealth() {
 		return healthStatus;
 	}
-	
-	public void substractHealth() {
-		this.healthStatus -= 1;;
-	}
+
 	
 	
 	/*

@@ -1,12 +1,24 @@
 import java.io.Serializable;
-
+/*
+ * Author : Prasiddhi Gyawali, Ishika Patel
+ * Date   : 11/12/22
+ * Class  : CSC 335
+ * File   : Bullet.java
+ * 
+ * Purpose : This class creates the weapon that each player uses
+ *           during the game 
+ *            
+ */
 public class Bullet implements Serializable{
 	 private int x;
 	 private int y;
 	 private int id;
 	 private int direction;
 	 
-	
+	/*
+	 * This is the constructor that saves the location of the bullet and
+	 * tracks which player shot it and in which direction
+	 */
 	 public Bullet(int x, int y, int id, int direction) {
 		 this.x = x;
 		 this.y =y;

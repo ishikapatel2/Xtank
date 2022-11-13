@@ -32,11 +32,14 @@ public class XTankServer
 		System.out.println(InetAddress.getLocalHost());
 		sq = new ArrayList<>();
 		
+		// runs the server
         try (var listener = new ServerSocket(12345)) 
         {
             System.out.println("The XTank server is running...");
             var pool = Executors.newFixedThreadPool(20);
            
+            
+            // connects all players to the server for the XTank game
             while (true) 
             {
                 Player player = new Player(playerID, 0);
@@ -46,34 +49,50 @@ public class XTankServer
         }
     }
 
+    /*
+     * This is the runnable for the Server which sends and receives
+     * information from all the players and ensure that all updates
+     * are visible to each player 
+     */
     private static class XTankManager implements Runnable 
     {
         private Socket socket;
         private Player currentPlayer;
 
+        /*
+         * This is the constructor class for the XTank Server
+         */
         XTankManager(Socket socket, Player player) 
         {
             this.socket = socket;
             this.currentPlayer = player;
         }
 
+        /*
+         * This method runs if the socket connects to the server. It keeps track of 
+         * the information to send to the server and the server responds by updating other sockets
+         * and sending it to the current socket with udpates
+         */
         @Override
         public void run() 
         {
             System.out.println("Connected: " + socket);
             try 
             {
+            	
+            	//initializing  input and output to and from the player 
             	DataInputStream in = new DataInputStream(socket.getInputStream());
             	DataOutputStream out = new DataOutputStream(socket.getOutputStream());
                 Scanner scanner = new Scanner(in);
                 PrintWriter outWriter = new PrintWriter(socket.getOutputStream(), true);
+                
                 sq.add(out);
                 int currid = currentPlayer.getID();
                 
                 // start position of current tank
                 Random random = new Random();
-                int x = random.ints(0,500).findFirst().getAsInt();
-                int y = random.ints(0,500).findFirst().getAsInt();
+                int x = random.ints(50,450).findFirst().getAsInt();
+                int y = random.ints(50,450).findFirst().getAsInt();
                 int dir = ThreadLocalRandom.current().nextInt(0, 3 + 1);
         
                 currentPlayer.setX(x);
