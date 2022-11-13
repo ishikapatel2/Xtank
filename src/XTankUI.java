@@ -519,7 +519,7 @@ public boolean wallCollision(int x, int y, int dir) {
 					this.filledCoordsBullet.clear();
 					setCoords(bullet.getX(), bullet.getY(), "Bullet");
 					// if the bullet is out of bounds, remove it
-					if(bullet.getX() < 0 || bullet.getX() > 800 || bullet.getY() < 0 || bullet.getY() > 650) {
+					if(bullet.getX() < 0 || bullet.getX() > width || bullet.getY() < 0 || bullet.getY() > height) {
 						enemyBulletsList.remove(i);
 					}
 					
@@ -758,8 +758,8 @@ public boolean wallCollision(int x, int y, int dir) {
 							while(isObstacleCollision().equals("tank") || 
 									isObstacleCollision().equals("both")) {
 								
-								x = (int)(Math.random()*500);
-								y = (int)(Math.random()*500);
+								x = (int)(Math.random()*450);
+								y = (int)(Math.random()*450);
 								
 								filledCoordsMyTank.clear();
 								setCoords(x, y, "My Tank");
