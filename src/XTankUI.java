@@ -861,7 +861,7 @@ public class XTankUI
 							tankDirection = newDir;
 							
 							filledCoordsMyTank.clear();
-							setCoords(newX, newY, "My Tank");
+							setCoords(newX, newY, "Tank");
 							
 							while(isObstacleCollision().equals("tank") || 
 									isObstacleCollision().equals("both")) {
@@ -870,7 +870,7 @@ public class XTankUI
 								y = (int)(Math.random()*450);
 								
 								filledCoordsMyTank.clear();
-								setCoords(x, y, "My Tank");
+								setCoords(x, y, "Tank");
 							}
 							
 							
